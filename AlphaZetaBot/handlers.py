@@ -198,6 +198,16 @@ def revoke_link(update, context):
     bot.send_message(chat_id=context["MODERATE"], text=Message.REVOKED_LINK)
 
 
+def send_id(update, context):
+
+    message = update.message
+    chat = message.chat
+    user = message.user
+
+    text = f"Chat ID : {chat.id}\n User ID : {user.id}"
+    message.reply_text(text=text)
+
+
 def send_link(update, context):
 
     bot = context.bot

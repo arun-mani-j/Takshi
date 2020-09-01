@@ -12,6 +12,7 @@ from .handlers import (
     restrict_user,
     request_explanation,
     revoke_link,
+    send_id,
     send_link,
     send_start,
 )
@@ -22,6 +23,7 @@ handles = {
         (("/approve", approve_user), ()),
         (("/clear", clear_messages), ()),
         (("/explain", request_explanation), ()),
+        (("/id", send_id), ()),
         (("/link", send_link), ()),
         (("/restrict", restrict_user), ()),
         (("/revoke", revoke_link), ()),
