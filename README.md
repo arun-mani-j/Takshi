@@ -67,13 +67,15 @@
   The bot is written in [Python](https://python.org), so install it if not done already.
  2. Python Telegram Bot  
   The bot uses [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot) package for interacting with Telegram API.
- 3. A bot token  
+ 3. PSYCOPG  
+  To acces PostgreSQL databases, we need this [PSYCOPG](https://www.psycopg.org).
+ 4. A bot token  
   You can get this free of cost using Telegram's [@BotFather](https://t.me/BotFather).
- 4. A place to host your bot  
+ 5. A place to host your bot  
   This may cost you money. There are free solutions available too, for example [Heroku](https://heroku.com). If you can keep your computer or
   laptop running for hours, you can **host the bot yourself** !
   For more info, refer to [Where to host bots ?](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Where-to-host-Telegram-Bots)
- 5. PostgreSQL  
+ 6. PostgreSQL  
   This a powerful free and open source database. There is 99.9% chance your hosting solution offers this database. If you go for personal
   hosting, then you can easily setup PostgreSQL in your system.
   Check out [PostgreSQL website](www.postgresql.org).
