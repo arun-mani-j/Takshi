@@ -46,16 +46,16 @@
 **Short and simple, Alpha Zeta Bot automates the above task for you.**
  
 ## Features ##
- 1. Automatic reminders_
+ 1. Automatic reminders  
   Some users join the gateway group and just forget. The bot takes care of reminding them (without using water to wake them up).
- 2. Periodic removals_
+ 2. Periodic removals  
   There are some good users who join the gateway group and just never care about any reminders. The bot automatically removes them.
- 3. Refreshes invite links_
+ 3. Refreshes invite links  
   The bot refreshes the invite links to avoid being stolen.
- 4. Integrated network_
+ 4. Integrated network  
   The bot links its personal message, gateway group, real group and admins group. This offers additional facility in moderation, as you will
   see in later sections.
- 5. Written in Python, 100 % free and open source.
+ 5. Written in Python, 100 % free and open source  
   You need not pay the developers, think of them or even thank them. Deploy the bot yourself, and enjoy life.
 
 ## Installation ##
@@ -63,17 +63,17 @@
  hurting yourself.
  
 ### Required ###
- 1. Python_
+ 1. Python  
   The bot is written in [Python](https://python.org), so install it if not done already.
- 2. Python Telegram Bot_
+ 2. Python Telegram Bot  
   The bot uses [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot) package for interacting with Telegram API.
- 1. A bot token_
+ 3. A bot token  
   You can get this free of cost using Telegram's [@BotFather](https://t.me/BotFather).
- 2. A place to host your bot_
+ 4. A place to host your bot  
   This may cost you money. There are free solutions available too, for example [Heroku](https://heroku.com). If you can keep your computer or
   laptop running for hours, you can **host the bot yourself** !
   For more info, refer to [Where to host bots ?](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Where-to-host-Telegram-Bots)
- 3. PostgreSQL_
+ 5. PostgreSQL  
   This a powerful free and open source database. There is 99.9% chance your hosting solution offers this database. If you go for personal
   hosting, then you can easily setup PostgreSQL in your system.
   Check out [PostgreSQL website](www.postgresql.org).
@@ -121,9 +121,13 @@
  You need to open the terminal and set the directory to the cloned folder. In hosting solutions, it's quite a different way, look at the
  documentation of the hosting solution.
  If you are hosting on your own :
-  `$ python3 -m AlphaZetaBot -p`
+  ```
+   $ python3 -m AlphaZetaBot -p
+  ```
  If you are hosting it in a dedicated solution :
-  `$ python3 -m AlphaZetaBot`
+  ```
+   $ python3 -m AlphaZetaBot
+  ```
 
 ## Help Or Bugs ##
  Please file an issue.
