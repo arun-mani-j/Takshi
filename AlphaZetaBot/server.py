@@ -15,14 +15,12 @@ class Server:
         self.updater = telegram.ext.Updater(
             token=config["TOKEN"], user_sig_handler=self.sig_handler
         )
-
-        self.updater["ADMINS"] = config["ADMINS"]
-        self.updater["CLEAN_INTERVAL"] = config["CLEAN_INTERVAL"]
-        self.updater["GATEWAY"] = config["GATEWAY"]
-        self.updater["GROUP"] = config["GROUP"]
-        self.updater["INVITE_LINK"] = config["INVITE_LINK"]
-        self.updater["MODERATE"] = config["MODERATE"]
-        self.updater["START_LINK"] = config["START_LINK"]
+        bot_data = self.updater.dispatcher.bot_data
+        bot_data.update(config)
+        bot_data.pop("DATABASE_URL")
+        bot_data.pop("REFRESH_INTERVAL")
+        bot_data.pop("TOKEN")
+        bot_data.pop("URL")
 
         self.updater.job_queue.run_repeating(
             callback=refresh_invite_link, interval=config["REFRESH_INTERVAL"], first=0
