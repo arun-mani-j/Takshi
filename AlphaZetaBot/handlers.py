@@ -25,7 +25,7 @@ def approve_user(update, context):
     if chat.id == context["GATEWAY"]:
         processor.approve_user(reply.from_user.id)
         button = telegram.InlineKeyboardButton(
-            text=Message.LABEL_GET_LINK, url=context["START_LINK"]
+            text=Message.LABEL_GET_LINK, url=context.bot_data["START_LINK"]
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
         message.delete()
@@ -35,11 +35,11 @@ def approve_user(update, context):
             parse_mode=telegram.ParseMode.MARKDOWN_V2,
         )
 
-    elif chat.id == context["MODERATE"]:
+    elif chat.id == context.bot_data["MODERATE"]:
         user_id, chat_id = get_user_chat_ids(reply.text)
         processor.approve_user(user_id)
         button = telegram.InlineKeyboardButton(
-            text=Message.LABEL_JOIN_LINK, url=context["INVITE_LINK"]
+            text=Message.LABEL_JOIN_LINK, url=context.bot_data["INVITE_LINK"]
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
         bot.send_message(
@@ -71,15 +71,15 @@ def clear_messages(update, context):
 
 def handle_left_member(update, context):
 
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
     message = update.message
     chat = message.chat
     left_user = message.left_chat_member
 
-    if chat.id == context["GATEWAY"]:
+    if chat.id == context.bot_data["GATEWAY"]:
         processor.remove_user_from_gateway(left_user.id)
-    elif chat.id == context["GROUP"]:
+    elif chat.id == context.bot_data["GROUP"]:
         processor.remove_user_from_group(left_user.id)
 
 
@@ -91,7 +91,7 @@ def handle_private_message(update, context):
     user = message.user
 
     text = format_text(user, chat.id, message.text)
-    bot.send_message(chat_id=context["MODERATE"], text=text)
+    bot.send_message(chat_id=context.bot_data["MODERATE"], text=text)
 
 
 def handle_query(update, context):
@@ -106,7 +106,7 @@ def handle_reply_message(update, context):
     chat = message.chat
 
     reply = message.reply
-    if reply.from_user != bot and chat.id != context["MODERATE"]:
+    if reply.from_user != bot and chat.id != context.bot_data["MODERATE"]:
         return
 
     user_id, chat_id = get_user_chat_ids(reply.text)
@@ -119,18 +119,18 @@ def handle_reply_message(update, context):
 def handle_new_member(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
     message = update.message
     chat = message.chat
     new_users = message.new_chat_members
     new_user_ids = [user.id for user in new_users]
 
-    if chat.id == context["GATEWAY"]:
+    if chat.id == context.bot_data["GATEWAY"]:
         processor.add_user_to_gateway(*new_user_ids)
-    elif chat.id == context["GROUP"]:
+    elif chat.id == context.bot_data["GROUP"]:
         processor.add_user_to_group(*new_user_ids)
-        remove_joined_users_from_gateway(bot, context["GATEWAY"], new_user_ids)
+        remove_joined_users_from_gateway(bot, context.bot_data["GATEWAY"], new_user_ids)
 
 
 @check_rights
@@ -143,12 +143,12 @@ def request_explanation(update, context):
     reply = message.reply_to_message
     chat = message.chat
 
-    if chat.id == context["GATEWAY"]:
+    if chat.id == context.bot_data["GATEWAY"]:
         message.delete()
         reply.send_text(
             text=Message.REQUEST_EXPLANATION, parse_mode=telegram.ParseMode.MARKDOWN_V2
         )
-    elif chat.id == context["GROUP"]:
+    elif chat.id == context.bot_data["GROUP"]:
         user_id, chat_id = get_user_chat_ids(reply.text)
         bot.send_message(
             chat_id=chat_id,
@@ -163,20 +163,20 @@ def request_explanation(update, context):
 def restrict_user(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
     message = update.message
     reply = message.reply_to_message
     chat = message.chat
 
-    if chat.id == context["GATEWAY"]:
+    if chat.id == context.bot_data["GATEWAY"]:
         processor.restrict_user(reply.from_user.id)
         bot.kick_chat_member(chat_id=chat.id, user_id=reply.from_user.id)
         reply.delete()
         message.delete()
-    elif chat.id == context["MODERATE"]:
+    elif chat.id == context.bot_data["MODERATE"]:
         user_id, chat_id = get_user_chat_ids(reply.text)
-        bot.kick_chat_member(chat_id=context["GATEWAY"], user_id=user_id)
+        bot.kick_chat_member(chat_id=context.bot_data["GATEWAY"], user_id=user_id)
         processor.restrict_user(user_id)
         message.reply_text(
             text=Message.REMOVED_USER, parse_mode=telegram.ParseMode.MARKDOWN_V2
@@ -191,11 +191,11 @@ def revoke_link(update, context):
     message = update.message
     chat = message.chat
 
-    if chat.id == context["GATEWAY"]:
+    if chat.id == context.bot_data["GATEWAY"]:
         message.delete()
 
     refresh_invite_link(context)
-    bot.send_message(chat_id=context["MODERATE"], text=Message.REVOKED_LINK)
+    bot.send_message(chat_id=context.bot_data["MODERATE"], text=Message.REVOKED_LINK)
 
 
 @check_is_reply
@@ -213,7 +213,7 @@ def send_id(update, context):
 def send_link(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
     message = update.message
     reply = message.reply_to_message
@@ -228,7 +228,7 @@ def send_link(update, context):
             )
         elif ret == 0:
             button = telegram.InlineKeyboardButton(
-                Message.LABEL_JOIN_LINK, url=context["INVITE_LINK"]
+                Message.LABEL_JOIN_LINK, url=context.bot_data["INVITE_LINK"]
             )
             markup = telegram.InlineKeyboardMarkup.from_button(button)
             message.send_text(
@@ -240,19 +240,19 @@ def send_link(update, context):
             message.send_text(
                 text=Message.ALREADY_JOINED, parse_mode=telegram.ParseMode.MARKDOWN_V2
             )
-    elif chat.id == context["GATEWAY"]:
+    elif chat.id == context.bot_data["GATEWAY"]:
         processor.approve_user(reply.from_user.id)
         button = telegram.InlineKeyboardButton(
-            Message.LABEL_GET_LINK, url=context["START_LINK"]
+            Message.LABEL_GET_LINK, url=context.bot_data["START_LINK"]
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
         message.delete()
         reply.send_text(Message.PM_FOR_LINK, reply_markup=markup)
-    elif chat.id == context["MODERATE"]:
+    elif chat.id == context.bot_data["MODERATE"]:
         user_id, chat_id = get_user_chat_ids(reply.text)
         processor.approve_user(user_id)
         button = telegram.InlineKeyboardButton(
-            Message.LABEL_JOIN_LINK, url=context["INVITE_LINK"]
+            Message.LABEL_JOIN_LINK, url=context.bot_data["INVITE_LINK"]
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
         bot.send_message(

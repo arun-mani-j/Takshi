@@ -41,28 +41,28 @@ def get_user_chat_ids(text):
 
 def refresh_invite_link(context):
 
-    context["INVITE_LINK"] = context.bot.export_chat_invite_link(
-        chat_id=context["GROUP"]
+    context.bot_data["INVITE_LINK"] = context.bot.export_chat_invite_link(
+        chat_id=context.bot_data["GROUP"]
     )
 
 
 def remind_unapproved_users(context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
     unapproved = processor.get_unapproved_users()
     notify_msg = " ".join(
         f"[{i}](tg://user?id={user_id})" for i, user_id in enumerate(unapproved)
     )
     msg = bot.send_message(
-        chat_id=context["GATEWAY"],
+        chat_id=context.bot_data["GATEWAY"],
         text=notify_msg,
         parse_mode=telegram.ParseMode.Markdown,
     )
     msg.edit_text(text=Message.REMIND_UNAPPROVED_USERS)
     bot.send_message(
-        chat_id=context["MODERATE"], text=Message.REMINDED_UNAPPROVED_USERS
+        chat_id=context.bot_data["MODERATE"], text=Message.REMINDED_UNAPPROVED_USERS
     )
 
 
@@ -71,22 +71,22 @@ def remove_expired_users(context):
     logger = logging.getLogger()
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
 
-    limit = datetime.now() - datetime.timedelta(context["CLEAN_INTERVAL"])
+    limit = datetime.now() - datetime.timedelta(context.bot_data["CLEAN_INTERVAL"])
 
     expired_users = processor.get_expired_users(limit)
     count = 0
     for user_id in expired_users:
         try:
-            bot.kick_chat_member(user_id=user_id, chat_id=context["GATEWAY"])
+            bot.kick_chat_member(user_id=user_id, chat_id=context.bot_data["GATEWAY"])
         except telegram.TelegramError as e:
             logger.error(e)
         else:
             count += 1
 
     bot.send_message(
-        chat_id=context["MODERATE"],
+        chat_id=context.bot_data["MODERATE"],
         text=Message.REMOVED_EXPIRED_USERS.format(COUNT=count),
     )
 
