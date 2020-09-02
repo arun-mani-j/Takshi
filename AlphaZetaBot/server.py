@@ -13,7 +13,7 @@ class Server:
 
         self.logger = logging.getLogger()
         self.updater = telegram.ext.Updater(
-            token=config["TOKEN"], user_sig_handler=self.sig_handler
+            token=config["TOKEN"], use_context=True, user_sig_handler=self.sig_handler
         )
         bot_data = self.updater.dispatcher.bot_data
         bot_data.update(config)
