@@ -16,7 +16,7 @@ def format_text(user, chat_id, text):
 def get_configuration():
 
     config = {
-        "ADMINS": [int(id.strip()) for id in os.getenv("ADMINS").split(",")],
+        "ADMINS": [int(id.strip()) for id in os.getenv("ADMINS", "").split(",")],
         "CLEAN_INTERVAL": int(os.getenv("CLEAN_INTERVAL", "300")),
         "DATABASE_URL": os.getenv("DATABASE_URL"),
         "GATEWAY": int(os.getenv("GATEWAY")),
