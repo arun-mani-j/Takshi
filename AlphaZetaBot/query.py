@@ -4,9 +4,7 @@ class Query:
         "UPDATE members SET approved = TRUE, rejected = FALSE WHERE user_id = %s;"
     )
 
-    ADD_USER_TO_GATEWAY = (
-        "INSERT INTO members(user_id, gateway) VALUES {LIST_S} ON CONFLICT (user_id) DO UPDATE SET joined = NOW(), gateway = TRUE; "
-    )
+    ADD_USER_TO_GATEWAY = "INSERT INTO members(user_id, gateway) VALUES {LIST_S} ON CONFLICT (user_id) DO UPDATE SET joined = NOW(), gateway = TRUE; "
 
     ADD_USER_TO_GROUP = "INSERT INTO members(user_id, private_group) VALUES {LIST_S} ON CONFLICT (user_id) DO UPDATE SET private_group = TRUE; "
 
