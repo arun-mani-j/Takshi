@@ -32,12 +32,9 @@ handles = {
         (("start", send_start, Filters.private), ()),
     ],
     MessageHandler: [
-        ((handle_left_member, Filters.status_update.left_chat_member), ()),
-        (
-            (handle_private_message, Filters.text & ~Filters.command & Filters.private),
-            (),
-        ),
-        ((handle_reply_message, Filters.text & ~Filters.command & Filters.reply), ()),
-        ((handle_new_member, Filters.status_update.new_chat_members), ()),
+        ((Filters.status_update.left_chat_member, handle_left_member), ()),
+        ((Filters.text & ~Filters.command & Filters.private, handle_private_message), ()),
+        ((Filters.text & ~Filters.command & Filters.reply, handle_reply_message), ()),
+        ((Filters.status_update.new_chat_members, handle_new_member), ()),
     ],
 }
