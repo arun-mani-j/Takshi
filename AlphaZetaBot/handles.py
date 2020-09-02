@@ -18,7 +18,9 @@ from .handlers import (
 )
 
 handles = {
-    CallbackQueryHandler: [(handle_query,), ()],
+    CallbackQueryHandler: [
+        ((handle_query,), ()),
+    ],
     CommandHandler: [
         (("/approve", approve_user), ()),
         (("/clear", clear_messages), ()),
