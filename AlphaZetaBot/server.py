@@ -36,6 +36,7 @@ class Server:
 
     def run(self):
 
+        self.logger.info("Started Server")
         self.updater.start_webhook(
             listen="0.0.0.0", port=config["PORT"], url_path=config["TOKEN"]
         )
