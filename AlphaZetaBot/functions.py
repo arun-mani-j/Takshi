@@ -1,104 +1,84 @@
 import datetime
 import logging
-import os
 import time
 import telegram
 
 from .message import Message
 
 
-def format_text(user, chat_id, text):
+def get_admins(chat_ids, bot):
 
-    ftext = f"{user.id} @{user.username} {user.first_name} {user.last_name}\n{chat_id}\n{text}"
-    return ftext
-
-
-def get_configuration():
-
-    config = {
-        "ADMINS": [int(id.strip()) for id in os.getenv("ADMINS", "").strip("[]").split(",") if id.strip()],
-        "CLEAN_INTERVAL": int(os.getenv("CLEAN_INTERVAL", "300")),
-        "DATABASE_URL": os.getenv("DATABASE_URL"),
-        "GATEWAY": int(os.getenv("GATEWAY", "0")),
-        "GROUP": int(os.getenv("GROUP", "0")),
-        "INVITE_LINK": os.getenv("INVITE_LINK"),
-        "MODERATE": int(os.getenv("MODERATE", "0")),
-        "PORT": int(os.getenv("PORT")),
-        "REFRESH_INTERVAL": int(os.getenv("REFRESH_INTERVAL", "24")),
-        "SEND_LINK": f"https://t.me/{os.getenv('BOT_NAME')}?start=sendlink",
-        "TOKEN": os.getenv("TOKEN"),
-        "URL": os.getenv("URL"),
-    }
-
-    return config
+    admins = []
+    for chat_id in chat_ids:
+        chat_admins = bot.get_chat_administrators(chat_id=chat_id)
+        admins.extend(chat_admins)
+    return list(set(admins))
 
 
 def get_user_chat_ids(text):
 
-    splits = text.split()
-    return splits[0], splits[4]
+    splits = text.splitlines()
+    user_id = splits[0].split(":")[-1]
+    chat_id = splits[3].split(":")[-1]
+    return (user_id, chat_id)
 
 
-def refresh_invite_link(context):
+def refresh_invite_link(id, bot, processor):
 
-    context.bot_data["INVITE_LINK"] = context.bot.export_chat_invite_link(
-        chat_id=context.bot_data["GROUP"]
-    )
+    priv_group_id = processor.get_private_group_id(id)
+    link = bot.export_chat_invite_link(chat_id=priv_group_id)
+    processor.set_invite_link(id, link)
 
 
-def remind_unapproved_users(context):
+def remind_unapproved_users(id, before_date, bot, processor):
 
-    bot = context.bot
-    processor = context.bot_data["processor"]
+    gateway_id = processor.get_gateway_id(id)
+    unapproved = processor.get_unapproved_users(id, before_date)
 
-    unapproved = processor.get_unapproved_users()
-    notify_msg = " ".join(
-        f"[{i}](tg://user?id={user_id})" for i, user_id in enumerate(unapproved)
-    )
-    msg = bot.send_message(
-        chat_id=context.bot_data["GATEWAY"],
-        text=notify_msg,
-        parse_mode=telegram.ParseMode.Markdown,
-    )
+    notify_msg = " ".join(Message.MENTION.format(CAPTION=i, USER_ID=user_id) for i, user_id in enumerate(unapproved))
+    msg = bot.send_message(chat_id=gateway_id, text=notify_msg, parse_mode=telegram.ParseMode.HTML)
     msg.edit_text(text=Message.REMIND_UNAPPROVED_USERS)
-    bot.send_message(
-        chat_id=context.bot_data["MODERATE"], text=Message.REMINDED_UNAPPROVED_USERS
-    )
 
 
-def remove_expired_users(context):
+def remove_expired_users(id, before_date, bot, processor):
 
-    logger = logging.getLogger()
-
-    bot = context.bot
-    processor = context.bot_data["processor"]
-
-    limit = datetime.now() - datetime.timedelta(context.bot_data["CLEAN_INTERVAL"])
-
-    expired_users = processor.get_expired_users(limit)
+    gateway_id = processor.get_gateway_id(id)
+    moderate_id = processor.get_moderate_id(id)
+    expired_users = processor.get_unapproved_users(id, before_date)
     count = 0
+
     for user_id in expired_users:
         try:
-            bot.kick_chat_member(user_id=user_id, chat_id=context.bot_data["GATEWAY"])
+            bot.kick_chat_member(user_id=user_id, chat_id=gateway_id)
         except telegram.TelegramError as e:
             logger.error(e)
         else:
             count += 1
 
-    bot.send_message(
-        chat_id=context.bot_data["MODERATE"],
-        text=Message.REMOVED_EXPIRED_USERS.format(COUNT=count),
-    )
+    bot.send_message(chat_id=moderate_id, text=Message.REMOVED_EXPIRED_USERS.format(COUNT=count), parse_mode=telegram.ParseMode.HTML)
 
 
-def remove_joined_users_from_gateway(bot, gateway_id, *user_ids):
+def periodic_job(context):
 
-    logger = logging.getLogger()
+    bot context.bot
+    processor = context["processor"]
+    intevals = context["intevals"]
 
-    for user_id in user_ids:
-        try:
-            bot.kick_chat_member(
-                chat_id=gateway_id, user_id=user_id, until_date=time.time() + 60
-            )
-        except telegram.TelegramError as e:
-            logger.error(e)
+    for _ in range(len(intevals)):
+        id, cln_int, cur_cln_val, ref_int, cur_ref_val = intevals.pop(0)
+
+        if cur_cln_val == cln_int // 2:
+            before_date = datetime.datetime.now() - datetime.timedelta(minutes=cln_int // 2)
+            remind_unapproved_users(id, before_date, bot, processor)
+        elif cur_cln_val == cln_int:
+            before_date = datetime.datetime.now() - datetime.timedelta(minutes=cln_int)
+            remove_expired_users(id, before_date, bot, processor)
+            cur_cln_val = 0
+        cur_cln_val += 1
+
+        if cur_ref_val == ref_int:
+            refresh_invite_link(id, bot, processor)
+            cur_ref_val = 0
+        cur_ref_val += 1
+
+        intervals.append((id, cln_int, cur_cln_val, ref_int, cur_ref_val))

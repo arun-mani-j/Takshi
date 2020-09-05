@@ -1,47 +1,41 @@
+from os import getenv
 import logging
 import telegram.ext
 
-from .functions import get_configuration, refresh_invite_link
+from .functions import periodic_job
 from .processor import Processor
 from .handles import handles
 
-config = get_configuration()
-
 
 class Server:
+
     def __init__(self):
 
-        self.logger = logging.getLogger()
-        self.updater = telegram.ext.Updater(
-            token=config["TOKEN"], use_context=True, user_sig_handler=self.sig_handler
-        )
+        self.processor = Processor(getenv("DATABASE_URL"))
+        self.updater = telegram.ext.Updater(token=getenv("TOKEN"), use_context=True, user_sig_handler=self.sig_handler)
+
         bot_data = self.updater.dispatcher.bot_data
-        bot_data.update(config)
-        bot_data.pop("DATABASE_URL")
-        bot_data.pop("REFRESH_INTERVAL")
-        bot_data.pop("TOKEN")
-        bot_data.pop("URL")
+        intervals = self.processor.get_intervals()
+        intervals_ = [(id, cln_int, 1, ref_int, 1) for (id, cln_int, ref_int) in intervals]
 
-        self.updater.job_queue.run_repeating(
-            callback=refresh_invite_link, interval=config["REFRESH_INTERVAL"], first=0
-        )
+        bot_data["intevals"] = intervals_
+        bot_data["processor"] = self.processor
 
-        self.processor = Processor(config["DATABASE_URL"])
+        self.updater.job_queue.run_repeating(callback=periodic_job, interval=60, first=0)
         self.setup_handles()
+
+    def listen(self):
+
+        logging.info("Started listening")
+        self.updater.start_webhook(listen="0.0.0.0", port=getenv("PORT"), url_path=getenv("TOKEN"))
+        self.updater.bot.set_webhook(url=getenv("URL")
+        self.updater.start_webhook()
+        self.updater.idle()
 
     def poll(self):
 
+        logging.info("Started polling")
         self.updater.start_polling()
-        self.updater.idle()
-
-    def run(self):
-
-        self.logger.info("Started Server")
-        self.updater.start_webhook(
-            listen="0.0.0.0", port=config["PORT"], url_path=config["TOKEN"]
-        )
-        self.updater.bot.set_webhook(url=config["URL"])
-        self.updater.start_webhook()
         self.updater.idle()
 
     def setup_handles(self):
@@ -54,5 +48,5 @@ class Server:
 
     def sig_handler(self, *args):
 
-        self.logger.info(f"Got Signal : {args}")
+        logging.info(f"Got Signal : {args}")
         self.processor.close()

@@ -7,4 +7,4 @@ server = AlphaZetaBot.Server()
 if "-p" in sys.argv:
     server.poll()
 else:
-    server.run()
+    server.listen()
