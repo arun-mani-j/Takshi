@@ -3,19 +3,20 @@
 
 ## Table of Contents ##
  So much recursion, so much wow.
+ 
  0. [Table of Contents](#table-of-contents)
  1. [What is it ?](#what-is-it-?)
  2. [Disadvantages Of Group Management Bots](#disadavantages-of-group-management-bots)
  3. [What Is A Gateway Group ?](#what-is-a-gateway-group-?)
  4. [What Is The Need Of A Bot In Gateway Group ?](#what-is-the-need-of-a-bot-in-gateway-group-?)
  5. [Features](#features)
- 6. [Quick Install](#quick-install)
+ 6. [Quick Start](#quick-start)
  7. [Installation](#installation)
-  1. [Required](#required)
-  2. [Installing](#installing)
-  3. [Initialising Database Table](#initialising-database-table)
-  4. [Environment Variable](#environment-variables)
-  5. [Launching The Bot](#launching-the-bot)
+  - [Required](#required)
+  - [Installing](#installing)
+  - [Initialising Database Table](#initialising-database-table)
+  - [Environment Variable](#environment-variables)
+  - [Launching The Bot](#launching-the-bot)
  8. [Help Or Bugs](#help-or-bugs)
  9. [Enjoy](#enjoy)
 
@@ -152,7 +153,7 @@
  After starting, open Telegram and message your bot. Send it a `/create` and follow the steps. That's it !
 
  If this didn't work, don't worry. Find what is causing the issue and try to tackle it. You may open an issue here if you want my help.
- Also, you can try the instance I [host](#quickstart).
+ Also, you can try the instance I [host](#quick-start).
 
 ## Help Or Bugs ##
  Please file an issue.
