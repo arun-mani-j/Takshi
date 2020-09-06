@@ -1,6 +1,24 @@
 # Alpha Zeta Bot #
  *A bot for anyone who is frustrated of group management bots*
 
+## Table of Contents ##
+ So much recursion, so much wow.
+ 0. [Table of Contents](#table-of-contents)
+ 1. [What is it ?](#what-is-it-?)
+ 2. [Disadvantages Of Group Management Bots](#disadavantages-of-group-management-bots)
+ 3. [What Is A Gateway Group ?](#what-is-a-gateway-group-?)
+ 4. [What Is The Need Of A Bot In Gateway Group ?](#what-is-the-need-of-a-bot-in-gateway-group-?)
+ 5. [Features](#features)
+ 6. [Quick Install](#quick-install)
+ 7. [Installation](#installation)
+  1. [Required](#required)
+  2. [Installing](#installing)
+  3. [Initialising Database Table](#initialising-database-table)
+  4. [Environment Variable](#environment-variables)
+  5. [Launching The Bot](#launching-the-bot)
+ 8. [Help Or Bugs](#help-or-bugs)
+ 9. [Enjoy](#enjoy)
+
 ## What Is It ? ##
  Alpha Zeta Bot is a Telegram bot to help you maintain gateway groups with peace of heart. It automatically removes unverified users,
  reminds unapproved users, generates and refreshes invite link automatically.
@@ -58,6 +76,13 @@
  5. Written in Python, 100 % free and open source  
   You need not pay the developers, think of them or even thank them. Deploy the bot yourself, and enjoy life.
 
+## Quick Start ##
+ For you all, who are not ready to host the bot yourself, you can use the instance I host.
+ It is available under name [@alphazetabot](http://t.me/alphazetabot). Start the bot and type `/create`.
+ Then the bot will tell you what you what to do.
+ 
+ Please be aware that this instance runs on a free plan in Heroku, so you know, anything unexpected may happen at expected times.
+
 ## Installation ##
  Deploying the bot is easy. Have some patience, a bottle of water, some good Internet connection. Keep any attacking items away to avoid
  hurting yourself.
@@ -100,23 +125,16 @@
  The way to modify the working of bot is through [environment variables](https://en.wikipedia.org/wiki/Environment_variable).
  Specifying them depends on your hosting solution and operating system.
 
-| Name               | Description                                                                               |
-|--------------------|------------------------------------------------------------------------------------------ |
-| `TOKEN`            | The token you obtained using Bot Father.                                                  |
-| `PORT`             | The port the server and connections should be handled on.                                 |
-| `DATABASE_URL`     | Database URL allows a connection to the database instance.                                |
-| `BOT_NAME`         | Username of the bot (used for creating links).                                            |
-| `GATEWAY`          | Chat ID of gateway group.                                                                 |
-| `GROUP`            | Chat ID of the private group.                                                             |
-| `MODERATE`         | Chat ID of the admins group.                                                              |
-| `URL`              | URL of the hosted bot, not needed if hosted personally.                                   |
-| `CLEAN_INTERVAL`   | Clean up unapproved members at every given number of hours. Default 24.                   |
-| `REFRESH_INTERVAL` | Refresh the invite link at every given number of seconds. Default 300, that is 5 minutes. |
-| `ADMINS`           | Comma separated user IDs who are admins of the group. Example : `0, 1, 2`                 |
+| Name               | Description                                                                       |
+|--------------------|---------------------------------------------------------------------------------- |
+| `ALLOW_CREATE`     | If `True`, allows others to use your bot in their group. Only affects new groups. |
+| `DATABASE_URL`     | Database URL allows a connection to the database instance.                        |
+| `PORT`             | The port the server and connections should be handled on.                         |
+| `TOKEN`            | The token you obtained using Bot Father.                                          |
+| `URL`              | URL of the hosted bot, not needed if hosted personally.                           |
 
 #### More Info ####
  * What is Database URL ? - [Database URL](https://stackoverflow.com/questions/3582552/postgresql-connection-url)
- * Getting IDs of groups and users - A simple way is to add the bot to the desired group and send `/id` command.
 
 ### Launching The Bot ###
  Wow, you managed to come till here ! Running the bot is just a command.
@@ -131,7 +149,13 @@
    $ python3 -m AlphaZetaBot
   ```
 
+ After starting, open Telegram and message your bot. Send it a `/create` and follow the steps. That's it !
+
+ If this didn't work, don't worry. Find what is causing the issue and try to tackle it. You may open an issue here if you want my help.
+ Also, you can try the instance I [host](#quickstart).
+
 ## Help Or Bugs ##
  Please file an issue.
  
 ## Enjoy ##
+ Everything should be working fine now. If not, tell me why.

@@ -1,4 +1,32 @@
-from .message import Message
+from .constants import Message
+
+
+def check_is_group_message(func):
+    def wrapped(update, context):
+
+        message = update.message
+        chat = message.chat
+
+        if chat.type != "private":
+            func(update, context)
+        else:
+            message.reply_text(Message.GROUP_COMMAND)
+
+    return wrapped
+
+
+def check_is_private_message(func):
+    def wrapped(update, context):
+
+        message = update.message
+        chat = message.chat
+
+        if chat.type == "private":
+            func(update, context)
+        else:
+            message.reply_text(Message.PM_COMMAND)
+
+    return wrapped
 
 
 def check_is_reply(func):
@@ -17,12 +45,17 @@ def check_is_reply(func):
 def check_rights(func):
     def wrapped(update, context):
 
+        processor = context["processor"]
         message = update.message
+        chat = message.chat
         user = message.from_user
 
-        if message and user.id in context["ADMINS"]:
+        id, _ = processor.find_id(chat.id)
+        allowed = processor.is_admin(id, user.id)
+
+        if message and allowed:
             func(update, context)
         else:
-            message.reply_text(Message.BAD_COMMAND)
+            message.reply_text(Message.INVALID_COMMAND)
 
     return wrapped

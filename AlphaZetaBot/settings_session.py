@@ -15,13 +15,14 @@ class SettingsSession(Session):
         self.group_id = None
         self.group_title = None
         self.groups = self.processor.get_groups(self.user.id)
+        self.prop = None
         self.send_select_group()
 
     def do_delete_group(self):
 
-        chat_ids = self.processor.get_chat_ids(self.current_id)
+        chat_ids = self.processor.get_chat_ids(self.group_id)
         leave_chats(chat_ids, self.bot)
-        self.processor.delete_group(self.current_id)
+        self.processor.delete_group(self.group_id)
 
     def do_change_clean_interval(self, interval):
 
@@ -100,7 +101,7 @@ class SettingsSession(Session):
                 self.group_id = int(str_id)
             except ValueError:
                 logging.error(
-                    f"Non-integer value {str_id} given for grp in Settings Session"
+                    "Non-integer value %s given for grp in Settings Session", str_id,
                 )
                 self.chat.send_message(
                     text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
@@ -128,7 +129,7 @@ class SettingsSession(Session):
             self.send_update_data()
 
         else:
-            logging.critical(f"Unexpected query {data} in Settings Session")
+            logging.critical("Unexpected query %s in Settings Session", data)
             self.chat.send_message(
                 text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
             )

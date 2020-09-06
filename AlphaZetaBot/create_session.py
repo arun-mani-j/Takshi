@@ -12,7 +12,7 @@ class CreateSession(Session):
         Session.__init__(self, message, context)
         self.base_message = None
         self.chats = [None, None, None]
-        self.create_allowed = context["ALLOW_CREATE"]
+        self.create_allowed = context.bot_data["ALLOW_CREATE"]
         self.send_select_group()
 
     def do_create_group(self):
@@ -27,7 +27,7 @@ class CreateSession(Session):
             return Message.SELECT_PRIVATE_GROUP
 
         gateway, moderate, priv_group = self.chats
-        admins = get_admins([gateway.id, moderate.id, priv_group.id])
+        admins = get_admins([gateway.id, moderate.id, priv_group.id], self.bot)
         title = priv_group.title
         id = self.processor.add_group(
             title, gateway.id, moderate.id, priv_group.id, admins
@@ -55,7 +55,7 @@ class CreateSession(Session):
         elif not data:
             query.answer()
         else:
-            logging.critical(f"Unexpected query with data {data}")
+            logging.critical("Unexpected query with data %s", data)
             query.answer(text=Message.INVALID_QUERY, show_alert=True)
 
     def handle_start(self, message, context):
@@ -76,7 +76,7 @@ class CreateSession(Session):
                 text=Message.SELECTED_PRIVATE_GROUP, parse_mode=telegram.ParseMode.HTML
             )
         else:
-            logging.critical(f"Start arguments are invalid : {context.args}")
+            logging.critical("Start arguments are invalid : %s", context.args)
             message.reply_text(
                 text=Message.INVALID_START_ARG, parse_mode=telegram.ParseMode.HTML
             )

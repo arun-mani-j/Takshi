@@ -6,6 +6,7 @@ class Session:
     def __init__(self, message, context):
 
         self.bot = context.bot
+        self.base_message = None
         self.chat = message.chat
         self.processor = context["processor"]
         self.user = message.from_user

@@ -12,6 +12,7 @@ CREATE TABLE groups (
        clean_interval INTEGER DEFAULT 1440 NOT NULL,
        prompt TEXT DEFAULT 'Tell me your interest in joining the group' NOT NULL,
        refresh_interval INTEGER DEFAULT 5 NOT NULL,
+       CONSTRAINT sane_values CHECK ((clean_interval > 0) AND (LENGTH(TRIM(prompt)) > 0) AND (refresh_interval > 0))
 );
 
 CREATE TABLE users (

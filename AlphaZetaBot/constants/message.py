@@ -2,6 +2,10 @@ class Message:
 
     ALREADY_JOINED = "You are already there in group. Why do you want the link ? If you want me to say something to admins, tell me."
 
+    APPROVED_JOIN = "Hey ! You have been approved to join {TITLE}. Please send me a /join and select the group."
+
+    CHAT_ID = "Chat ID : <code>{CHAT_ID}</code>\nUser ID : <code>{USER_ID}</code>"
+
     CREATE_BANNER = (
         "Creating a new group is easy. Just tell me which group for what purpose and I will start monitoring them.\n"
         " • <b>Gateway</b> - Public group where new users join and verify they are legit.\n"
@@ -35,14 +39,21 @@ class Message:
 
     GROUP_NOT_FOUND = "{TITLE} is not found. May be someone deleted it now ?"
 
+    IGNORED_USER = "Fine. I'm not bothered about the user now."
+
     INVALID_COMMAND = "What do you mean ? This action will be reported."
+
+    INVALID_FORWARD = (
+        "I'm not able to understand that message. Is it the right message ?"
+    )
 
     INVALID_ID = "No group found with the given ID."
 
     INVALID_INTERVAL = "Please send a positive integer."
 
     INVALID_MESSAGE = (
-        "I didn't ask you a text message. Please reply using above buttons."
+        "I can't understand you reason for a message. "
+        "If you wanted to say something to admins of a group, then select a group using /join first."
     )
 
     INVALID_PROMPT = "Please send a valid text message."
@@ -51,17 +62,16 @@ class Message:
 
     INVALID_REPLY = "You should reply to a message for this action to proceed."
 
+    INVALID_SESSION_MESSAGE = (
+        "I didn't ask you a text message. Please reply using above buttons."
+    )
     INVALID_START_ARG = (
         "Nobody expected that argument for /start. What are you trying to do ?"
     )
 
-    NO_COMMON_GROUPS = "We have no groups in common. Are you sure that it was me in the gateway group ?"
-
     JOIN_SELECT_GROUP = (
         "We have the following groups in common. Which one do you want to join ?"
     )
-
-    THANK_FOR_JOIN = "Thanks for joining !"
 
     LINK_CAUTION = (
         "Please join the group by clicking the following button. <b>Remember the link may expire anytime</b>."
@@ -71,6 +81,8 @@ class Message:
     LINK_REFRESHED = "Link refreshed."
 
     MENTION = "<a href='tg://user?id={USER_ID}'>{CAPTION}</a"
+
+    NO_COMMON_GROUPS = "We have no groups in common. Are you sure that it was me in the gateway group ?"
 
     PM_COMMAND = "This command is meant to be used in private message. Please contact me in personal message."
 
@@ -83,9 +95,11 @@ class Message:
         "If you continue to remain <i>silent</i> you will be <b>removed</b> from the group soon !"
     )
 
-    REMOVED_EXPIRED_USERS = "As a part of regular clean up, I removed {COUNT} users."
+    REMOVED_OUTDATED_USERS = "As a part of regular clean up, I removed {COUNT} users."
 
     REMOVED_USER = "I have removed the user."
+
+    RESTRICTED_USER = "I have restricted the user."
 
     REVOKED_LINK = "I have revoked the old link and generated new one."
 
@@ -103,11 +117,11 @@ class Message:
 
     SENT_LINK = "I have sent the link to the user."
 
-    SENT_MESSAGE_TEXT = "Sent the message to the user."
+    SENT_MESSAGE = "Sent the message to the user."
 
     SENT_TO_MODERATORS = "I have sent the message to admins of {TITLE}"
 
-    SENT_REQUEST_EXPLANATION = "I have asked the user for explanation."
+    SENT_EXPLANATION = "I have asked the user for explanation."
 
     SESSION_CONTINUED = "To avoid chat getting clumsy, I have sent a new message below."
 
@@ -173,4 +187,6 @@ class Message:
 
     START = "Hey there ! If you want the link of the group please send me a /link."
 
-    START_IN_GROUP = "Yea, I'm here. What's up ?"
+    START_GROUP = "Yea, I'm here. What's up ?"
+
+    THANK_FOR_JOIN = "Thanks for joining !"

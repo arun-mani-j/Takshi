@@ -1,7 +1,6 @@
-import datetime
 import psycopg2
 
-from .query import Query
+from .constants import Query
 
 
 class Processor:
@@ -9,23 +8,23 @@ class Processor:
 
         self.connection = psycopg2.connect(database_url)
 
-    def add_user_to_gateway(self, id, *user_ids):
+    def add_users_to_gateway(self, id, *user_ids):
 
         cursor = self.connection.cursor()
         args = []
         for user_id in user_ids:
             args.extend((id, user_id))
-        list_s = f"(%s, %s, TRUE)," * len(user_ids)
+        list_s = "(%s, %s, TRUE)," * len(user_ids)
         cursor.execute(Query.ADD_USER_GATEWAY.format(LIST_S=list_s), args)
         cursor.close()
 
-    def add_user_to_group(self, *user_ids):
+    def add_users_to_group(self, *user_ids):
 
         cursor = self.connection.cursor()
         args = []
         for user_id in user_ids:
             args.extend((id, user_id))
-        list_s = f"(%s, %s, TRUE)," * len(user_ids)
+        list_s = "(%s, %s, TRUE)," * len(user_ids)
         cursor.execute(Query.ADD_USER_PRIVATE_GROUP.format(LIST_S=list_s), args)
         cursor.close()
 
@@ -39,10 +38,32 @@ class Processor:
 
         self.connection.close()
 
-    def create_group(self, title, gateway_id, moderate_id, private_group_id, admins, clean_interval, prompt, refresh_interval):
+    def create_group(
+        self,
+        title,
+        gateway_id,
+        moderate_id,
+        private_group_id,
+        admins,
+        clean_interval,
+        prompt,
+        refresh_interval,
+    ):
 
         cursor = self.connection.cursor()
-        cursor.execute(Query.ADD_GROUP, (title, gateway_id, moderate_id, private_group_id, admins, clean_interval, prompt, refresh_interval))
+        cursor.execute(
+            Query.CREATE_GROUP,
+            (
+                title,
+                gateway_id,
+                moderate_id,
+                private_group_id,
+                admins,
+                clean_interval,
+                prompt,
+                refresh_interval,
+            ),
+        )
         id = next(cursor, None)
         cursor.close()
         return id
@@ -57,9 +78,9 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.FIND_ID, (chat_id,))
-        id = next(cursor, None)
+        id, type = next(cursor, (None, None))
         cursor.close()
-        return id
+        return (id, type)
 
     def get_admins(self, id):
 
@@ -81,8 +102,9 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_CHAT_IDS, (id,))
-        chat_ids = next(cursor, [None, None, None])
+        chat_ids = next(cursor, (None, None, None))
         cursor.close()
+        return chat_ids
 
     def get_eligible_for_link(self, id, user_id):
 
@@ -98,12 +120,13 @@ class Processor:
             return 0
         if in_priv_group:
             return 1
+        return -1
 
     def get_gateway_id(self, id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_GATEWAY_ID, (id,))
-        gateway_id  = next(cursor, None)
+        gateway_id = next(cursor, None)
         cursor.close()
         return gateway_id
 
@@ -111,16 +134,24 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_GROUPS, (user_id,))
-        id_titles = next(cursor, [])
-        groups = {id: title for id, title in id_titles}
+        id_titles = next(cursor, ())
+        groups = dict(id_titles)
         cursor.close()
         return groups
+
+    def get_intervals(self):
+
+        cursor = self.connection.cursor()
+        cursor.execute(Query.GET_INTERVALS)
+        for id, cln_int, ref_int in cursor:
+            yield (id, cln_int, ref_int)
+        cursor.close()
 
     def get_invite_link(self, id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_INVITE_LINK, (id,))
-        link  = next(cursor, None)
+        link = next(cursor, None)
         cursor.close()
         return link
 
@@ -131,6 +162,14 @@ class Processor:
         moderate_id = next(cursor, None)
         cursor.close()
         return moderate_id
+
+    def get_outdated_users(self, id):
+
+        cursor = self.connection.cursor()
+        cursor.execute(Query.GET_OUTDATED_USERS, (id,))
+        for user_id in cursor:
+            yield user_id
+        cursor.close()
 
     def get_private_group_id(self, id):
 
@@ -164,12 +203,18 @@ class Processor:
         cursor.close()
         return title
 
-    def get_unapproved_users(self, id, before_date=None):
+    def get_to_remind_users(self, id):
 
         cursor = self.connection.cursor()
-        if not before_date:
-            before_date = datetime.datetime.now()
-        cursor.execute(Query.UNAPPROVED_USERS, (id, before_date))
+        cursor.execute(Query.GET_TO_REMIND_USERS, (id,))
+        for user_id in cursor:
+            yield user_id
+        cursor.close()
+
+    def get_unapproved_users(self, id):
+
+        cursor = self.connection.cursor()
+        cursor.execute(Query.GET_UNAPPROVED_USERS, (id,))
         for user_id in cursor:
             yield user_id
         cursor.close()
@@ -180,7 +225,15 @@ class Processor:
         cursor.execute(Query.IGNORE_USER, (id, user_id))
         cursor.close()
 
-    def is_user_approved(self, id, user_id):
+    def is_admin(self, id, user_id):
+
+        cursor = self.connection.cursor()
+        cursor.execute(Query.USER_ADMIN, (user_id, id))
+        val = next(cursor, False)
+        cursor.close()
+        return val
+
+    def is_approved(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.USER_APPROVED, (id, user_id))
@@ -188,7 +241,7 @@ class Processor:
         cursor.close()
         return val
 
-    def is_user_in_gateway(self, id, user_id):
+    def is_in_gateway(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.USER_IN_GATEWAY, (id, user_id))
@@ -196,7 +249,7 @@ class Processor:
         cursor.close()
         return val
 
-    def is_user_in_private_group(self, id, user_id):
+    def is_in_private_group(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.USER_IN_GROUP, (id, user_id))
@@ -204,10 +257,10 @@ class Processor:
         cursor.close()
         return val
 
-    def is_user_restricted(self, id, user_id):
+    def is_restricted(self, id, user_id):
 
         cursor = self.connection.cursor()
-        cursor.execute(Query.USER_REJECTED, (id, user_id))
+        cursor.execute(Query.USER_RESTRICTED, (id, user_id))
         val = next(cursor, False)
         cursor.close()
         return val
@@ -239,7 +292,7 @@ class Processor:
     def set_clean_interval(self, id, interval):
 
         cursor = self.connection.cursor()
-        cursor.execute(Query.SET_CLEAN_INTERAL, (interval, id))
+        cursor.execute(Query.SET_CLEAN_INTERVAL, (interval, id))
         cursor.close()
 
     def set_invite_link(self, id, link):

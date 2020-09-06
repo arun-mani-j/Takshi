@@ -21,11 +21,14 @@ class Query:
 
     ELIGIBLE_FOR_LINK = "SELECT in_private_group, approved, restricted FROM users WHERE id = %s AND user_id = %s;"
 
-    FIND_ID = "SELECT id FROM groups WHERE gateway_id = %s OR moderate_id = %s OR private_group_id = %s;"
+    FIND_ID = (
+        "SELECT id, ARRAY_POSITION(ARRAY[gateway_id = %s, moderate_id = %s,  private_group_id = %s], TRUE) "
+        "FROM groups WHERE gateway_id = %s OR moderate_id = %s OR private_group_id = %s;"
+    )
 
     GET_ADMINS = "SELECT admins FROM groups WHERE id = %s;"
 
-    GET_CLEAN_INTERAVL = "SELECT clean_interval FROM groups WHERE id = %s;"
+    GET_CLEAN_INTERVAL = "SELECT clean_interval FROM groups WHERE id = %s;"
 
     GET_CHAT_IDS = (
         "SELECT gateway_id, moderate_id, private_group_id FROM groups WHERE id = %s;"
@@ -35,9 +38,16 @@ class Query:
 
     GET_GATEWAY_ID = "SELECT gateway_id FROM groups WHERE id = %s;"
 
+    GET_INTERVALS = "SELECT id, clean_interval, refresh_interval FROM groups;"
+
     GET_INVITE_LINK = "SELECT invite_link FROM groups WHERE id = %s;"
 
     GET_MODERATE_ID = "SELECT moderate_id FROM groups WHERE id = %s;"
+
+    GET_OUTDATED_USERS = (
+        "SELECT user_id FROM groups, users "
+        "WHERE id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
+    )
 
     GET_PRIVATE_GROUP_ID = "SELECT private_group_id FROM groups WHERE id = %s;"
 
@@ -47,7 +57,14 @@ class Query:
 
     GET_TITLE = "SELECT title FROM groups WHERE id = %s;"
 
-    GET_UNAPPROVED_USERS = "SELECT user_id FROM users WHERE id = %s AND joined <= %s;"
+    GET_TO_REMIND_USERS = (
+        "SELECT user_id FROM groups, users "
+        "WHERE id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
+    )
+
+    GET_UNAPPROVED_USERS = (
+        "SELECT user_id FROM users WHERE id = %s AND approved = FALSE;"
+    )
 
     IGNORE_USER = "DELETE FROM users WHERE id = %s AND user_id = %s;"
 
@@ -72,6 +89,8 @@ class Query:
     SET_REFRESH_INTERVAL = "UPDATE groups SET refresh_interval = %s WHERE id = %s;"
 
     SET_TITLE = "UPDATE groups SET title = %s WHERE id = %s;"
+
+    USER_ADMIN = "SELECT %s = ANY(admins) FROM groups WHERE id = %s;"
 
     USER_APPROVED = "SELECT approved FROM users WHERE id = %s AND user_id = %s;"
 

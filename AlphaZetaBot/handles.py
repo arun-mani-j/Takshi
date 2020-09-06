@@ -7,10 +7,9 @@ from .handlers import (
     configure_group,
     create_group,
     handle_left_member,
-    handle_message
+    handle_message,
     handle_private_message,
     handle_query,
-    handle_reply_message,
     handle_new_member,
     join_group,
     restrict_user,
@@ -22,9 +21,7 @@ from .handlers import (
 )
 
 handles = {
-    CallbackQueryHandler: [
-        ((handle_query,), ()),
-    ],
+    CallbackQueryHandler: [((handle_query,), ()),],
     CommandHandler: [
         (("approve", approve_user), ()),
         (("create", create_group), ()),
@@ -41,7 +38,10 @@ handles = {
     MessageHandler: [
         ((Filters.status_update.left_chat_member, handle_left_member), ()),
         ((Filters.status_update.new_chat_members, handle_new_member), ()),
-        ((Filters.text & ~Filters.command & Filters.private, handle_private_message), ()),
-        ((Filters.text & ~Filters.command, handle_message), ())
+        (
+            (Filters.text & ~Filters.command & Filters.private, handle_private_message),
+            (),
+        ),
+        ((Filters.text & ~Filters.command, handle_message), ()),
     ],
 }

@@ -62,7 +62,7 @@ class JoinSession(Session):
             try:
                 id = int(data.lstrip("join="))
             except ValueError:
-                logging.critical(f"Got non-integer id {id} for join")
+                logging.critical("Got non-integer id %s for join", id)
                 self.chat.send_message(
                     text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
                 )
@@ -73,7 +73,7 @@ class JoinSession(Session):
             try:
                 id = int(data.lstrip("refJoin="))
             except ValueError:
-                logging.critical(f"Got non-integer id {id} for join")
+                logging.critical("Got non-integer id %s for join", id)
                 self.chat.send_message(
                     text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
                 )
@@ -82,7 +82,7 @@ class JoinSession(Session):
                 self.do_join_group(id)
         else:
             query.answer()
-            logging.critical(f"Got unexpected callback query {data}")
+            logging.critical("Got unexpected callback query %s", data)
             self.chat.send_message(
                 text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
             )
@@ -95,8 +95,8 @@ class JoinSession(Session):
             )
             return
 
-        moderate_id = self.processsor.get_moderate_id(self.group_id)
-        text = Message.DESCRIPTIVE_MESSAGE.format(
+        moderate_id = self.processor.get_moderate_id(self.group_id)
+        text = Message.FORWARD_MESSAGE.format(
             ID=self.user.id,
             USERNAME=self.user.username,
             NAME=f"{self.user.first_name} {self.user.last_name}",
