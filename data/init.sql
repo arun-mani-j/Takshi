@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS groups
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS groups;
 
 CREATE TABLE groups (
-       id SERIAL PRIMARY KEY.
+       id SERIAL PRIMARY KEY,
        title TEXT NOT NULL,
        gateway_id BIGINT UNIQUE NOT NULL,
        moderate_id BIGINT UNIQUE NOT NULL,
