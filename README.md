@@ -6,7 +6,7 @@
  
  0. [Table of Contents](#table-of-contents)
  1. [What is it ?](#what-is-it-)
- 2. [Disadvantages Of Group Management Bots](#disadavantages-of-group-management-bots)
+ 2. [Disadvantages Of Group Management Bots](#disadvantages-of-group-management-bots)
  3. [What Is A Gateway Group ?](#what-is-a-gateway-group-)
  4. [What Is The Need Of A Bot In Gateway Group ?](#what-is-the-need-of-a-bot-in-gateway-group-)
  5. [Features](#features)
@@ -15,7 +15,7 @@
   - [Required](#required)
   - [Installing](#installing)
   - [Initialising Database Table](#initialising-database-table)
-  - [Environment Variable](#environment-variables)
+  - [Environment Variables](#environment-variables)
   - [Launching The Bot](#launching-the-bot)
  8. [Help Or Bugs](#help-or-bugs)
  9. [Enjoy](#enjoy)
