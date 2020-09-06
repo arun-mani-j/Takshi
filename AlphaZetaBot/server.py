@@ -21,7 +21,7 @@ class Server:
             (id, cln_int, 1, ref_int, 1) for (id, cln_int, ref_int) in intervals
         ]
 
-        bot_data["intevals"] = intervals_
+        bot_data["intervals"] = intervals_
         bot_data["processor"] = self.processor
 
         self.updater.job_queue.run_repeating(
