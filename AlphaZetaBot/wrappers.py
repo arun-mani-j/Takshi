@@ -45,7 +45,7 @@ def check_is_reply(func):
 def check_rights(func):
     def wrapped(update, context):
 
-        processor = context["processor"]
+        processor = context.bot_data["processor"]
         message = update.message
         chat = message.chat
         user = message.from_user

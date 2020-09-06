@@ -21,6 +21,7 @@ class Server:
             (id, cln_int, 1, ref_int, 1) for (id, cln_int, ref_int) in intervals
         ]
 
+        bot_data["ALLOW_CREATE"] = getenv("ALLOW_CREATE", "True").lower() == "true"
         bot_data["intervals"] = intervals_
         bot_data["processor"] = self.processor
 
@@ -52,6 +53,7 @@ class Server:
             for args_h, args_d in args_lx:
                 handle = handler(*args_h)
                 dispatcher.add_handler(handle, *args_d)
+        dispatcher.add_error_handler(lambda _, ctx: logging.error(ctx.error))
 
     def sig_handler(self, *args):
 

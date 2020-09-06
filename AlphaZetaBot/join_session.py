@@ -101,7 +101,7 @@ class JoinSession(Session):
             USERNAME=self.user.username,
             NAME=f"{self.user.first_name} {self.user.last_name}",
             CHAT_ID=self.chat.id,
-            TEXT=message.text_html_urled(),
+            TEXT=message.text_html_urled,
         )
         self.bot.send_message(
             chat_id=moderate_id, text=text, parse_mode=telegram.ParseMode.HTML

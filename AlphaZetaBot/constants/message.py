@@ -33,7 +33,7 @@ class Message:
 
     GROUP_DELETED = "Group {TITLE} deleted successfully !"
 
-    GROUP_EXISTS = "It seems like I'm already monitoring the group. If you wanted to change settings, try /settings."
+    GROUP_EXISTS = "It seems like I'm already monitoring the given group. If you wanted to change settings, try /settings."
 
     GROUP_COMMAND = "This command is meant to be used in a group."
 
@@ -52,7 +52,7 @@ class Message:
     INVALID_INTERVAL = "Please send a positive integer."
 
     INVALID_MESSAGE = (
-        "I can't understand you reason for a message. "
+        "I can't understand your reason for a message. "
         "If you wanted to say something to admins of a group, then select a group using /join first."
     )
 
@@ -126,7 +126,7 @@ class Message:
     SESSION_CONTINUED = "To avoid chat getting clumsy, I have sent a new message below."
 
     SESSION_EXPIRED = (
-        "You have started doing something else. So this message has been expired."
+        "You have started doing something else. So this session has expired."
     )
 
     SET_CLEAN_INTERVAL = (

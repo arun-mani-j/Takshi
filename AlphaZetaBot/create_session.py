@@ -29,7 +29,7 @@ class CreateSession(Session):
         gateway, moderate, priv_group = self.chats
         admins = get_admins([gateway.id, moderate.id, priv_group.id], self.bot)
         title = priv_group.title
-        id = self.processor.add_group(
+        id = self.processor.create_group(
             title, gateway.id, moderate.id, priv_group.id, admins
         )
 
@@ -51,7 +51,7 @@ class CreateSession(Session):
 
         if data == "createGroup":
             text = self.do_create_group()
-            query.answer(text=text, show_alert=True)
+            query.answer(text=text)
         elif not data:
             query.answer()
         else:
@@ -94,14 +94,14 @@ class CreateSession(Session):
         buttons = [
             [
                 telegram.InlineKeyboardButton(
-                    text=Label.SELECT_GATEWAY, callback_data=f"{start_link}Gateway"
+                    text=Label.SELECT_GATEWAY, url=f"{start_link}Gateway"
                 ),
                 telegram.InlineKeyboardButton(
-                    text=Label.SELECT_MODERATE, callback_data=f"{start_link}Moderate"
+                    text=Label.SELECT_MODERATE, url=f"{start_link}Moderate"
                 ),
                 telegram.InlineKeyboardButton(
                     text=Label.SELECT_PRIVATE_GROUP,
-                    callback_data=f"{start_link}Private",
+                    url=f"{start_link}Private",
                 ),
             ],
             [
@@ -112,7 +112,7 @@ class CreateSession(Session):
         ]
 
         markup = telegram.InlineKeyboardMarkup(buttons)
-        self.chat.send_message(
+        self.base_message = self.chat.send_message(
             text=Message.CREATE_BANNER,
             parse_mode=telegram.ParseMode.HTML,
             reply_markup=markup,

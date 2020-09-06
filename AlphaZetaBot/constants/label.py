@@ -6,7 +6,7 @@ class Label:
 
     CLEAN_INTERVAL = "Clean Interval"
 
-    DELETE_CONFIRM = "DELETE the Group"
+    DELETE_CONFIRM = "DELETE"
 
     DELETE_GROUP = "Delete Group"
 
@@ -20,10 +20,10 @@ class Label:
 
     REFRESH_LINK = "Refresh Link"
 
-    SELECT_GATEWAY = "Gateway Group"
+    SELECT_GATEWAY = "Gateway"
 
-    SELECT_MODERATE = "Moderation Group"
+    SELECT_MODERATE = "Moderation"
 
-    SELECT_PRIVATE_GROUP = "Private Group"
+    SELECT_PRIVATE_GROUP = "Private"
 
     UPDATE = "Update"

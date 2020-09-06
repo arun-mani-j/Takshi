@@ -8,14 +8,14 @@ class Session:
         self.bot = context.bot
         self.base_message = None
         self.chat = message.chat
-        self.processor = context["processor"]
+        self.processor = context.bot_data["processor"]
         self.user = message.from_user
 
     def __del__(self):
 
         self.expire()
 
-    def expire(self, continued=True):
+    def expire(self, continued=False):
 
         if self.base_message:
             if continued:
@@ -29,6 +29,7 @@ class Session:
 
     def handle_callback(self, query, context):
 
+        query.answer()
         self.chat.send_message(
             text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
         )

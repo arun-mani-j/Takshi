@@ -24,7 +24,7 @@ from .wrappers import (
 def approve_user(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
@@ -74,11 +74,7 @@ def clear_messages(update, context):
 @check_is_private_message
 def configure_group(update, context):
 
-    message = update.session
-    session = context.user_data.get("session", None)
-
-    if session:
-        session.expire()
+    message = update.message
     session = SettingsSession(message, context)
     context.user_data["session"] = session
 
@@ -86,11 +82,7 @@ def configure_group(update, context):
 @check_is_private_message
 def create_group(update, context):
 
-    message = update.session
-    session = context.user_data.get("session", None)
-
-    if session:
-        session.expire()
+    message = update.message
     session = CreateSession(message, context)
     context.user_data["session"] = session
 
@@ -132,7 +124,7 @@ def handle_message(update, context):
         else:
             bot.send_message(
                 chat_id=chat_id,
-                text=message.html_urled(),
+                text=message.html_urled,
                 parse_mode=telegram.ParseMode.HTML,
             )
             message.reply_text(
@@ -155,12 +147,13 @@ def handle_private_message(update, context):
 
 def handle_query(update, context):
 
-    query = update.query
-    session = context.user_data["session"]
+    query = update.callback_query
+    session = context.user_data.get("session", None)
 
     if session:
-        session.handle_query(query, context)
+        session.handle_callback(query, context)
     else:
+        query.answer()
         query.message.chat.send_message(
             text=Message.INVALID_QUERY, parse_mode=telegram.ParseMode.HTML
         )
@@ -211,10 +204,6 @@ def ignore_user(update, context):
 def join_group(update, context):
 
     message = update.message
-    session = context.user_data.get("session", None)
-
-    if session:
-        session.expire()
     session = JoinSession(message, context)
     context.user_data["session"] = session
 
@@ -302,7 +291,7 @@ def send_id(update, context):
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    user_id = reply.from_user.id if reply.from_user else message.from_user.id
+    user_id = reply.from_user.id if reply else message.from_user.id
     text = Message.CHAT_ID.format(CHAT_ID=chat.id, USER_ID=user_id)
 
     message.reply_text(text=text, parse_mode=telegram.ParseMode.HTML)
@@ -352,8 +341,6 @@ def send_start(update, context):
 
     if chat.type == "private" and args:
         if args[0] == "join":
-            if session:
-                session.expire()
             session = JoinSession(message, context)
             context.user_data["session"] = session
     elif chat.type == "private" and not args:

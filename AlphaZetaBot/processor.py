@@ -45,9 +45,9 @@ class Processor:
         moderate_id,
         private_group_id,
         admins,
-        clean_interval,
-        prompt,
-        refresh_interval,
+        clean_interval=1440,
+        prompt="Hey there tell me your interest in joining the group !",
+        refresh_interval=5,
     ):
 
         cursor = self.connection.cursor()
@@ -66,6 +66,7 @@ class Processor:
         )
         id = next(cursor, None)
         cursor.close()
+        self.connection.commit()
         return id
 
     def delete_group(self, id):
@@ -73,11 +74,13 @@ class Processor:
         cursor = self.connection.cursor()
         cursor.execute(Query.DELETE_GROUP, (id,))
         cursor.close()
+        self.connection.commit()
 
     def find_id(self, chat_id):
 
         cursor = self.connection.cursor()
-        cursor.execute(Query.FIND_ID, (chat_id,))
+        args = (chat_id,) * 6
+        cursor.execute(Query.FIND_ID, args)
         id, type = next(cursor, (None, None))
         cursor.close()
         return (id, type)
@@ -86,7 +89,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_ADMINS, (id,))
-        admins = next(cursor, [])
+        admins = next(cursor, (()))[0]
         cursor.close()
         return admins
 
@@ -94,7 +97,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_CLEAN_INTERVAL, (id,))
-        interval = next(cursor, None)
+        interval = next(cursor, (None,))[0]
         cursor.close()
         return interval
 
@@ -126,7 +129,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_GATEWAY_ID, (id,))
-        gateway_id = next(cursor, None)
+        gateway_id = next(cursor, (None,))[0]
         cursor.close()
         return gateway_id
 
@@ -134,8 +137,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_GROUPS, (user_id,))
-        id_titles = next(cursor, ())
-        groups = dict(id_titles)
+        groups = dict(cursor)
         cursor.close()
         return groups
 
@@ -151,7 +153,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_INVITE_LINK, (id,))
-        link = next(cursor, None)
+        link = next(cursor, (None,))[0]
         cursor.close()
         return link
 
@@ -159,7 +161,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_MODERATE_ID, (id,))
-        moderate_id = next(cursor, None)
+        moderate_id = next(cursor, (None,))[0]
         cursor.close()
         return moderate_id
 
@@ -175,7 +177,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_PRIVATE_GROUP_ID, (id,))
-        private_group_id = next(cursor, None)
+        private_group_id = next(cursor, (None,))[0]
         cursor.close()
         return private_group_id
 
@@ -183,7 +185,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_PROMPT, (id,))
-        prompt = next(cursor, None)
+        prompt = next(cursor, (None,))[0]
         cursor.close()
         return prompt
 
@@ -191,7 +193,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_REFRESH_INTERVAL, (id,))
-        interval = next(cursor, None)
+        interval = next(cursor, (None,))[0]
         cursor.close()
         return interval
 
@@ -199,7 +201,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_TITLE, (id,))
-        title = next(cursor, None)
+        title = next(cursor, (None,))[0]
         cursor.close()
         return title
 
@@ -270,51 +272,60 @@ class Processor:
         cursor = self.connection.cursor()
         cursor.execute(Query.REMOVE_USER_GATEWAY, (id, user_id))
         cursor.close()
+        self.connection.commit()
 
     def remove_user_from_group(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.REMOVE_USER_GROUP, (id, user_id))
         cursor.close()
+        self.connection.commit()
 
     def restrict_user(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.RESTRICT_USER, (id, user_id))
         cursor.close()
+        self.connection.commit()
 
     def set_admins(self, id, admins):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_ADMINS, (admins, id))
         cursor.close()
+        self.connection.commit()
 
     def set_clean_interval(self, id, interval):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_CLEAN_INTERVAL, (interval, id))
         cursor.close()
+        self.connection.commit()
 
     def set_invite_link(self, id, link):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_INVITE_LINK, (link, id))
         cursor.close()
+        self.connection.commit()
 
     def set_prompt(self, id, prompt):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_PROMPT, (prompt, id))
         cursor.close()
+        self.connection.commit()
 
     def set_refresh_interval(self, id, interval):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_REFRESH_INTERVAL, (interval, id))
         cursor.close()
+        self.connection.commit()
 
     def set_title(self, id, title):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.SET_TITLE, (title, id))
         cursor.close()
+        self.connection.commit()

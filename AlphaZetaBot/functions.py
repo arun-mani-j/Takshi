@@ -10,7 +10,7 @@ def get_admins(chat_ids, bot):
     admins = []
     for chat_id in chat_ids:
         chat_admins = bot.get_chat_administrators(chat_id=chat_id)
-        admins.extend(chat_admins)
+        admins.extend([admin.user.id for admin in chat_admins])
     return list(set(admins))
 
 
@@ -53,6 +53,8 @@ def remind_unapproved_users(id, bot, processor):
         Message.MENTION.format(CAPTION=i, USER_ID=user_id)
         for i, user_id in enumerate(unapproved)
     )
+    if not notify_msg.strip():
+        return
     msg = bot.send_message(
         chat_id=gateway_id, text=notify_msg, parse_mode=telegram.ParseMode.HTML
     )
@@ -68,7 +70,7 @@ def remove_users_from_chat(user_ids, chat_id, bot):
             bot.kick_chat_member(
                 chat_id=chat_id, user_id=user_id, until_date=until_date
             )
-        except telegram.TelegramError as error:
+        except Exception as error:
             logging.error(error)
 
 
@@ -82,7 +84,7 @@ def remove_outdated_users(id, bot, processor):
     for user_id in outdated_users:
         try:
             bot.kick_chat_member(user_id=user_id, chat_id=gateway_id)
-        except telegram.TelegramError as error:
+        except Exception as error:
             logging.error(error)
         else:
             count += 1

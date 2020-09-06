@@ -15,23 +15,23 @@ class SettingsSession(Session):
         self.group_id = None
         self.group_title = None
         self.groups = self.processor.get_groups(self.user.id)
-        self.prop = None
-        self.send_select_group()
+        self.send_select_group(edit=False)
 
     def do_delete_group(self):
 
         chat_ids = self.processor.get_chat_ids(self.group_id)
         leave_chats(chat_ids, self.bot)
         self.processor.delete_group(self.group_id)
+        del self.groups[self.group_id]
 
     def do_change_clean_interval(self, interval):
 
         val = interval.strip()
         try:
             val = int(float(val))
-            assert val <= 0
+            assert val > 0
         except (AssertionError, ValueError):
-            self.prop = "clean_interval"
+            self.editing_prop = "clean_interval"
             self.chat.send_message(
                 text=Message.INVALID_INTERVAL, parse_mode=telegram.ParseMode.HTML
             )
@@ -64,7 +64,7 @@ class SettingsSession(Session):
         val = interval.strip()
         try:
             val = int(float(val))
-            assert val <= 0
+            assert val > 0
         except (AssertionError, ValueError):
             self.editing_prop = "refresh_interval"
             self.chat.send_message(
@@ -85,6 +85,7 @@ class SettingsSession(Session):
         self.editing_prop = None
 
         if data == "delCfm":
+            text = Message.GROUP_DELETED.format(TITLE=self.group_title)
             self.do_delete_group()
             query.answer(text=Message.GROUP_DELETED, show_alert=True)
             self.send_select_group()
@@ -139,14 +140,14 @@ class SettingsSession(Session):
         editing_prop = self.editing_prop
         self.editing_prop = None
         if editing_prop == "clean_interval":
-            self.do_change_clean_interval(message.text_html_urled())
+            self.do_change_clean_interval(message.text)
         elif editing_prop == "prompt":
-            self.do_change_prompt(message.text_html_urled())
+            self.do_change_prompt(message.text_html_urled)
         elif editing_prop == "refresh_interval":
-            self.do_change_refresh_interval(message.text_html_urled())
+            self.do_change_refresh_interval(message.text)
         else:
             message.reply_text(
-                text=Message.INVALID_MESSAGE, parse_mode=telegram.ParseMode.HTML
+                text=Message.INVALID_SESSION_MESSAGE, parse_mode=telegram.ParseMode.HTML
             )
 
     def send_change_clean_interval(self):
@@ -197,15 +198,16 @@ class SettingsSession(Session):
 
     def send_delete(self):
 
+        text = Message.DELETE_GROUP.format(TITLE=self.group_title)
         buttons = [
             telegram.InlineKeyboardButton(
-                text=Label.DELETE_GROUP, callback_data="delCfm"
+                text=Label.DELETE_CONFIRM, callback_data="delCfm"
             ),
             telegram.InlineKeyboardButton(text=Label.BACK, callback_data="selPrp"),
         ]
         markup = telegram.InlineKeyboardMarkup.from_row(buttons)
         self.base_message.edit_text(
-            text=Message.DELETE_GROUP,
+            text=text,
             parse_mode=telegram.ParseMode.HTML,
             reply_markup=markup,
         )
@@ -217,7 +219,7 @@ class SettingsSession(Session):
         self.base_message.edit_text(text=text, parse_mode=telegram.ParseMode.HTML)
         self.send_select_group()
 
-    def send_select_group(self, edit=False):
+    def send_select_group(self, edit=True):
 
         if not self.groups:
             if edit:
@@ -234,7 +236,7 @@ class SettingsSession(Session):
                 telegram.InlineKeyboardButton(text=title, callback_data=f"grp={id}")
                 for id, title in self.groups.items()
             ]
-            markup = telegram.InlineKeyboardMarkup(buttons)
+            markup = telegram.InlineKeyboardMarkup.from_column(buttons)
             if edit:
                 self.base_message.edit_text(
                     text=Message.SETTINGS_SELECT_GROUP,
@@ -266,7 +268,7 @@ class SettingsSession(Session):
             ],
             [
                 telegram.InlineKeyboardButton(
-                    text=Label.DELETE_CONFIRM, callback_data="delGrp"
+                    text=Label.DELETE_GROUP, callback_data="delGrp"
                 )
             ],
             [telegram.InlineKeyboardButton(text=Label.BACK, callback_data="selGrp")],
@@ -290,7 +292,7 @@ class SettingsSession(Session):
         old_admins = self.processor.get_admins(self.group_id)
         new_admins = get_admins(chat_ids, self.bot)
 
-        self.processor.set_chat_title(self.group_id, new_title)
+        self.processor.set_title(self.group_id, new_title)
         self.processor.set_admins(self.group_id, new_admins)
         self.group_title = self.groups[self.group_id] = new_title
 

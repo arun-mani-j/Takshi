@@ -13,7 +13,7 @@ class Query:
     APPROVE_USER = "UPDATE users SET approved = TRUE, rejected = FALSE WHERE id = %s AND user_id = %s;"
 
     CREATE_GROUP = (
-        "INSERT INTO groups (title, gateway_id, moderate_id, private_group_id, admins, prompt, clean_interval, refresh_interval) "
+        "INSERT INTO groups (title, gateway_id, moderate_id, private_group_id, admins, clean_interval, prompt, refresh_interval) "
         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING RETURNING id;"
     )
 
@@ -46,7 +46,7 @@ class Query:
 
     GET_OUTDATED_USERS = (
         "SELECT user_id FROM groups, users "
-        "WHERE id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
+        "WHERE groups.id = users.id AND groups.id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
     )
 
     GET_PRIVATE_GROUP_ID = "SELECT private_group_id FROM groups WHERE id = %s;"
@@ -59,7 +59,7 @@ class Query:
 
     GET_TO_REMIND_USERS = (
         "SELECT user_id FROM groups, users "
-        "WHERE id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
+        "WHERE groups.id = users.id AND groups.id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
     )
 
     GET_UNAPPROVED_USERS = (
