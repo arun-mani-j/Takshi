@@ -210,7 +210,7 @@ def ignore_user(update, context):
 @check_is_private_message
 def join_group(update, context):
 
-    message = update.session
+    message = update.message
     session = context.user_data.get("session", None)
 
     if session:
