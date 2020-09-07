@@ -1,4 +1,4 @@
-# Alpha Zeta Bot #
+# Takshi #
  *A bot for anyone who is frustrated of group management bots*
 
 ## Table of Contents ##
@@ -21,7 +21,7 @@
  9. [Enjoy](#enjoy)
 
 ## What Is It ? ##
- Alpha Zeta Bot is a Telegram bot to help you maintain gateway groups with peace of heart. It automatically removes unverified users,
+ Takshi is a Telegram bot to help you maintain gateway groups with peace of heart. It automatically removes unverified users,
  reminds unapproved users, generates and refreshes invite link automatically.
 
 ## Disadvantages Of Group Management Bots ##
@@ -62,7 +62,7 @@
  To avoid this, you can ask the legit users to personal message you for an invite link. You send them the link and revoke it after the
  user joins.
  
-**Short and simple, Alpha Zeta Bot automates the above task for you.**
+**Short and simple, Takshi automates the above task for you.**
  
 ## Features ##
  1. Automatic reminders  
@@ -79,7 +79,7 @@
 
 ## Quick Start ##
  For you all, who are not ready to host the bot yourself, you can use the instance I host.
- It is available under name [@alphazetabot](http://t.me/alphazetabot). Start the bot and type `/create`.
+ It is available under name [@Takshi](http://t.me/Takshi). Start the bot and type `/create`.
  Then the bot will tell you what you what to do.
  
  Please be aware that this instance runs on a free plan in Heroku, so you know, anything unexpected may happen at expected times.
@@ -117,10 +117,10 @@
  There is a good chance, PostgreSQL already made a database for you. If not, you need to [create](https://www.postgresqltutorial.com/postgresql-create-database/) it.
  After that, you need to create the table. Say you have cloned the repository to `Downloads` directory, then open a terminal and type :
  ```
-  $ cd AlphaZetaBot
+  $ cd Takshi
   $ psql -f data/init.sql
  ```
- In short, you need to execute the file `AlphaZetaBot data/init.sql` (or it's contents) in `PSQL`.
+ In short, you need to execute the file `Takshi data/init.sql` (or it's contents) in `PSQL`.
 
 ### Environment Variables ###
  The way to modify the working of bot is through [environment variables](https://en.wikipedia.org/wiki/Environment_variable).
@@ -143,11 +143,11 @@
  documentation of the hosting solution.
  If you are hosting on your own :
   ```
-   $ python3 -m AlphaZetaBot -p
+   $ python3 -m Takshi -p
   ```
  If you are hosting it in a dedicated solution :
   ```
-   $ python3 -m AlphaZetaBot
+   $ python3 -m Takshi
   ```
 
  After starting, open Telegram and message your bot. Send it a `/create` and follow the steps. That's it !
