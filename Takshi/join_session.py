@@ -100,7 +100,6 @@ class JoinSession(Session):
             ID=self.user.id,
             USERNAME=self.user.username,
             NAME=f"{self.user.first_name} {self.user.last_name}",
-            CHAT_ID=self.chat.id,
             TEXT=message.text_html_urled,
         )
         self.bot.send_message(
@@ -130,7 +129,7 @@ class JoinSession(Session):
             telegram.InlineKeyboardButton(text=title, callback_data=f"join={id}")
             for id, title in self.groups.items()
         ]
-        markup = telegram.InlineKeyboardMarkup(buttons)
+        markup = telegram.InlineKeyboardMarkup.from_column(buttons)
         if edit:
             self.base_message.edit_text(
                 text=Message.JOIN_SELECT_GROUP,

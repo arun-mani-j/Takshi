@@ -53,7 +53,7 @@ class Server:
             for args_h, args_d in args_lx:
                 handle = handler(*args_h)
                 dispatcher.add_handler(handle, *args_d)
-        dispatcher.add_error_handler(lambda _, ctx: logging.error(ctx.error))
+        # dispatcher.add_error_handler(lambda _, ctx: logging.error(ctx.error))
 
     def sig_handler(self, *args):
 

@@ -3,7 +3,6 @@ import telegram
 
 from .create_session import CreateSession
 from .functions import (
-    get_user_chat_ids,
     refresh_invite_link,
     remove_users_from_chat,
 )
@@ -43,12 +42,22 @@ def approve_user(update, context):
             reply_markup=markup,
         )
     elif type == 2:
-        user_id, chat_id = get_user_chat_ids(reply.text)
-        title = processor.get_title(id)
-        processor.approve_user(id, user_id)
-        text = Message.APPROVED_JOIN.format(TITLE=title)
-        bot.send_message(chat_id=chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
-        message.reply_text(text=Message.SENT_LINK, parse_mode=telegram.ParseMode.HTML)
+        try:
+            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
+            message.reply_text(
+                text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
+            )
+        else:
+            title = processor.get_title(id)
+            processor.approve_user(id, user_id)
+            text = Message.APPROVED_JOIN.format(TITLE=title)
+            bot.send_message(
+                chat_id=user_id, text=text, parse_mode=telegram.ParseMode.HTML
+            )
+            message.reply_text(
+                text=Message.SENT_LINK, parse_mode=telegram.ParseMode.HTML
+            )
     else:
         message.reply_text(
             text=Message.INVALID_COMMAND, parse_mode=telegram.ParseMode.HTML
@@ -60,13 +69,14 @@ def approve_user(update, context):
 @check_is_reply
 def clear_messages(update, context):
 
+    bot = context.bot
     chat = update.message.chat
-    from_id = update.message.id
-    to_id = update.message.reply_to_message.id
+    to_id = update.message.message_id
+    from_id = update.message.reply_to_message.message_id
 
     for msg_id in range(from_id, to_id + 1):
         try:
-            chat.delete_message(message_id=msg_id)
+            bot.delete_message(chat_id=chat.id, message_id=msg_id)
         except telegram.TelegramError as e:
             logging.error(e)
 
@@ -116,8 +126,8 @@ def handle_message(update, context):
 
     if type == 2 and reply.from_user.id == bot.id:
         try:
-            _, chat_id = get_user_chat_ids(reply.text)
-        except IndexError:
+            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
             message.reply_text(
                 text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
             )
@@ -193,11 +203,17 @@ def ignore_user(update, context):
         processor.ignore_user(id, reply.from_user.id)
         message.delete()
     elif type == 2:
-        user_id, _ = get_user_chat_ids(reply.text)
-        processor.ignore_user(id, user_id)
-        message.reply_text(
-            text=Message.IGNORED_USER, parse_mode=telegram.ParseMode.HTML
-        )
+        try:
+            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
+            message.reply_text(
+                text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
+            )
+        else:
+            processor.ignore_user(id, user_id)
+            message.reply_text(
+                text=Message.IGNORED_USER, parse_mode=telegram.ParseMode.HTML
+            )
 
 
 @check_is_private_message
@@ -225,13 +241,19 @@ def request_explanation(update, context):
         message.delete()
         reply.reply_text(text=prompt, parse_mode=telegram.ParseMode.HTML)
     elif type == 2:
-        _, chat_id = get_user_chat_ids(reply.text)
-        bot.send_message(
-            chat_id=chat_id, text=prompt, parse_mode=telegram.ParseMode.HTML
-        )
-        message.reply_text(
-            text=Message.SENT_EXPLANATION, parse_mode=telegram.ParseMode.HTML
-        )
+        try:
+            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
+            message.reply_text(
+                text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
+            )
+        else:
+            bot.send_message(
+                chat_id=chat_id, text=prompt, parse_mode=telegram.ParseMode.HTML
+            )
+            message.reply_text(
+                text=Message.SENT_EXPLANATION, parse_mode=telegram.ParseMode.HTML
+            )
     else:
         message.reply_text(
             text=Message.INVALID_COMMAND, parse_mode=telegram.ParseMode.HTML
@@ -255,14 +277,20 @@ def restrict_user(update, context):
         message.delete()
         chat.kick_member(user_id=reply.from_user.id)
     elif type == 2:
-        user_id, _ = get_user_chat_ids(reply.text)
-        processor.restrict_user(id, user_id)
-        gateway_id, _, group_id = processor.get_chat_ids(id)
-        bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
-        bot.kick_chat_member(chat_id=group_id, user_id=user_id)
-        message.reply_text(
-            text=Message.RESTRICTED_USER, parse_mode=telegram.ParseMode.HTML
-        )
+        try:
+            user_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
+            message.reply_text(
+                text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
+            )
+        else:
+            processor.restrict_user(id, user_id)
+            gateway_id, _, group_id = processor.get_chat_ids(id)
+            bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
+            bot.kick_chat_member(chat_id=group_id, user_id=user_id)
+            message.reply_text(
+                text=Message.RESTRICTED_USER, parse_mode=telegram.ParseMode.HTML
+            )
     elif type == 3:
         processor.restrict_user(id, reply.from_user.id)
         message.delete()
@@ -330,17 +358,27 @@ def send_link(update, context):
             text=Label.GET_LINK, url=f"{bot.link}?start=join"
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
-        reply.send_message(
+        reply.reply_text(
             text=Message.PM_FOR_LINK,
             parse_mode=telegram.ParseMode.HTML,
             reply_markup=markup,
         )
     elif type == 2:
-        _, chat_id = get_user_chat_ids(reply.text)
-        title = processor.get_title(id)
-        text = Message.APPROVED_JOIN.format(TITLE=title)
-        bot.send_message(chat_id=chat_id, text=text, parse_mode=telegram.ParseMode.HTML)
-        message.reply_text(text=Message.SENT_LINK, parse_mode=telegram.ParseMode.HTML)
+        try:
+            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+        except (ValueError, IndexError):
+            message.reply_text(
+                text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
+            )
+        else:
+            title = processor.get_title(id)
+            text = Message.APPROVED_JOIN.format(TITLE=title)
+            bot.send_message(
+                chat_id=chat_id, text=text, parse_mode=telegram.ParseMode.HTML
+            )
+            message.reply_text(
+                text=Message.SENT_LINK, parse_mode=telegram.ParseMode.HTML
+            )
     else:
         message.reply_text(
             text=Message.INVALID_COMMAND, parse_mode=telegram.ParseMode.HTML

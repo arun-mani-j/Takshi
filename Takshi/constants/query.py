@@ -10,7 +10,7 @@ class Query:
         "ON CONFLICT (id, user_id) DO UPDATE SET in_group = TRUE;"
     )
 
-    APPROVE_USER = "UPDATE users SET approved = TRUE, rejected = FALSE WHERE id = %s AND user_id = %s;"
+    APPROVE_USER = "UPDATE users SET approved = TRUE, restricted = FALSE WHERE id = %s AND user_id = %s;"
 
     CREATE_GROUP = (
         "INSERT INTO groups (title, gateway_id, moderate_id, private_group_id, admins, clean_interval, prompt, refresh_interval) "

@@ -20,14 +20,6 @@ def get_chat_title(chat_id, bot):
     return chat.title
 
 
-def get_user_chat_ids(text):
-
-    splits = text.splitlines()
-    user_id = splits[0].split(":")[-1]
-    chat_id = splits[3].split(":")[-1]
-    return (user_id, chat_id)
-
-
 def leave_chats(chat_ids, bot):
 
     for chat_id in chat_ids:

@@ -17,6 +17,7 @@ class Processor:
         list_s = "(%s, %s, TRUE)," * len(user_ids)
         cursor.execute(Query.ADD_USER_GATEWAY.format(LIST_S=list_s), args)
         cursor.close()
+        self.connection.commit()
 
     def add_users_to_group(self, *user_ids):
 
@@ -27,12 +28,14 @@ class Processor:
         list_s = "(%s, %s, TRUE)," * len(user_ids)
         cursor.execute(Query.ADD_USER_PRIVATE_GROUP.format(LIST_S=list_s), args)
         cursor.close()
+        self.connection.commit()
 
     def approve_user(self, id, user_id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.APPROVE_USER, (id, user_id))
         cursor.close()
+        self.connection.commit()
 
     def close(self):
 
@@ -197,7 +200,7 @@ class Processor:
         cursor.close()
         return interval
 
-    def get_title(self, title):
+    def get_title(self, id):
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_TITLE, (id,))

@@ -23,7 +23,13 @@ class Message:
         "All the saved settings and data will be permanently <b>lost</b> !"
     )
 
-    FORWARD_MESSAGE = "User ID : <code>{ID}</code>\nUsername : @{USERNAME}\n{NAME}\nChat ID : <code>{CHAT_ID}</code>\n{TEXT}"
+    FORWARD_MESSAGE = (
+        "User ID : <code>{ID}</code>\n"
+        "Username : @{USERNAME}\n"
+        "Name : {NAME}\n"
+        "Said :\n"
+        "{TEXT}"
+    )
 
     DONE = "Done successfully !"
 
