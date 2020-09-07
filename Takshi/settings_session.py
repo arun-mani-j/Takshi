@@ -219,15 +219,15 @@ class SettingsSession(Session):
 
     def send_select_group(self, edit=True):
 
+        if edit:
+            sender = self.base_message.edit_text
+        else:
+            sender = self.base_message.send_message
+
         if not self.groups:
-            if edit:
-                self.base_message.edit_text(
-                    text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML
-                )
-            else:
-                self.chat.send_message(
-                    text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML
-                )
+            msg = sender(
+                text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML
+            )
 
         else:
             buttons = [
@@ -235,20 +235,20 @@ class SettingsSession(Session):
                 for id, title in self.groups.items()
             ]
             markup = telegram.InlineKeyboardMarkup.from_column(buttons)
-            if edit:
-                self.base_message.edit_text(
-                    text=Message.SETTINGS_SELECT_GROUP,
-                    parse_mode=telegram.ParseMode.HTML,
-                    reply_markup=markup,
-                )
-            else:
-                self.base_message = self.chat.send_message(
-                    text=Message.SETTINGS_SELECT_GROUP,
-                    parse_mode=telegram.ParseMode.HTML,
-                    reply_markup=markup,
-                )
+            msg = sender(
+                text=Message.SETTINGS_SELECT_GROUP,
+                parse_mode=telegram.ParseMode.HTML,
+                reply_markup=markup,
+            )
+
+        self.base_message = msg
 
     def send_select_property(self, edit=True):
+
+        if edit:
+            sender = self.base_message.edit_text
+        else:
+            sender = self.base_message.send_message
 
         text = Message.SETTINGS_SELECT_PROPERTY.format(TITLE=self.group_title)
         buttons = [
@@ -273,14 +273,8 @@ class SettingsSession(Session):
         ]
         markup = telegram.InlineKeyboardMarkup(buttons)
 
-        if edit:
-            self.base_message.edit_text(
-                text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=markup
-            )
-        else:
-            self.base_message = self.chat.send_message(
-                text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=markup
-            )
+        msg = sender(text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=markup)
+        self.base_message = msg
 
     def send_update_data(self):
 

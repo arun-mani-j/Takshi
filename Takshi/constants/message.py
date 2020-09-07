@@ -190,7 +190,7 @@ class Message:
     )
 
     SETTINGS_SELECT_GROUP = (
-        "I have the following groups where you are assigned as an admin.\n"
+        "I have the following groups where you are an admin.\n"
         "Choose the group and then I will show you the properties that can be changed."
     )
 

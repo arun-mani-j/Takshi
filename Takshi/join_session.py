@@ -12,9 +12,22 @@ class JoinSession(Session):
         self.group_id = None
         self.group_title = None
         self.groups = self.processor.get_groups(self.user.id)
-        self.send_select_group()
+        if context.args and context.args[0].startswith("join="):
+            try:
+                id = int(context.args[0].lstrip("join="))
+            except (IndexError, ValueError) as e:
+                logging.error("Asked to join invalid id %s", id)
+            else:
+                self.do_join_group(id, edit=False)
+        else:
+            self.send_select_group()
 
-    def do_join_group(self, id):
+    def do_join_group(self, id, edit=True):
+
+        if edit:
+            sender = self.base_message.edit_text
+        else:
+            sender = self.base_message.send_message
 
         self.group_id = id
         self.group_title = self.groups[id]
@@ -28,7 +41,7 @@ class JoinSession(Session):
             return
 
         if eligible == -1:
-            self.chat.send_message(
+            msg = sender(
                 text=Message.PROMPT.format(PROMPT=prompt),
                 parse_mode=telegram.ParseMode.HTML,
             )
@@ -42,15 +55,17 @@ class JoinSession(Session):
                 ),
             ]
             markup = telegram.InlineKeyboardMarkup.from_column(buttons)
-            self.user.send_message(
+            msg = sender(
                 text=Message.LINK_CAUTION,
                 parse_mode=telegram.ParseMode.HTML,
                 reply_markup=markup,
             )
         else:
-            self.chat.send_message(
-                text=Message.ALREADY_JOINED, parse_mode=telegram.ParseMode.HTML
+            msg = sender(
+                text=Message.ALREADY_JOINED, parse_mode=telegram.ParseMode.HTML,
             )
+
+        self.base_message = msg
 
     def handle_callback(self, query, context):
 
@@ -119,10 +134,13 @@ class JoinSession(Session):
 
     def send_select_group(self, edit=False):
 
+        if edit:
+            sender = self.base_message.edit_text
+        else:
+            sender = self.base_message.send_message
+
         if not self.groups:
-            self.chat.send_message(
-                text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML
-            )
+            sender(text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML)
             return
 
         buttons = [
@@ -130,15 +148,10 @@ class JoinSession(Session):
             for id, title in self.groups.items()
         ]
         markup = telegram.InlineKeyboardMarkup.from_column(buttons)
-        if edit:
-            self.base_message.edit_text(
-                text=Message.JOIN_SELECT_GROUP,
-                parse_mode=telegram.ParseMode.HTML,
-                reply_markup=markup,
-            )
-        else:
-            self.base_message = self.chat.send_message(
-                text=Message.JOIN_SELECT_GROUP,
-                parse_mode=telegram.ParseMode.HTML,
-                reply_markup=markup,
-            )
+
+        msg = sender(
+            text=Message.JOIN_SELECT_GROUP,
+            parse_mode=telegram.ParseMode.HTML,
+            reply_markup=markup,
+        )
+        self.base_message = msg

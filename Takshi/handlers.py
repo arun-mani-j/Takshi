@@ -43,7 +43,7 @@ def approve_user(update, context):
         )
     elif type == 2:
         try:
-            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+            user_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
         except (ValueError, IndexError):
             message.reply_text(
                 text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
@@ -355,7 +355,7 @@ def send_link(update, context):
     if type == 1:
         message.delete()
         button = telegram.InlineKeyboardButton(
-            text=Label.GET_LINK, url=f"{bot.link}?start=join"
+            text=Label.GET_LINK, url=f"{bot.link}?start=join={id}"
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
         reply.reply_text(
@@ -393,9 +393,13 @@ def send_start(update, context):
     session = context.user_data.get("session", None)
 
     if chat.type == "private" and args:
-        if args[0] == "join":
+        if args[0].startswith("join="):
             session = JoinSession(message, context)
             context.user_data["session"] = session
+        else:
+            chat.send_message(
+                Message.INVALID_START_ARG, parse_mode=telegram.ParseMode.HTML
+            )
     elif chat.type == "private" and not args:
         chat.send_message(text=Message.START, parse_mode=telegram.ParseMode.HTML)
     elif chat.type != "private" and args:
