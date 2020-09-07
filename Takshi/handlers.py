@@ -291,10 +291,14 @@ def send_help(update, context):
     message = update.message
     chat = message.chat
 
-    if chat.type != "private":
-        message.reply_text(text=, parse_mode=telegram.ParseMode.HTML)
+    if chat.type == "private":
+        message.reply_text(
+            text=Message.HELP,
+            parse_mode=telegram.ParseMode.HTML,
+            disable_web_page_preview=True,
+        )
     else:
-        message.reply_text(text=, parse_mode=telegram.ParseMode.HTML)
+        message.reply_text(text=Message.HELP_IN_PM, parse_mode=telegram.ParseMode.HTML)
 
 
 def send_id(update, context):

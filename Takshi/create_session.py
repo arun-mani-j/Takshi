@@ -100,8 +100,7 @@ class CreateSession(Session):
                     text=Label.SELECT_MODERATE, url=f"{start_link}Moderate"
                 ),
                 telegram.InlineKeyboardButton(
-                    text=Label.SELECT_PRIVATE_GROUP,
-                    url=f"{start_link}Private",
+                    text=Label.SELECT_PRIVATE_GROUP, url=f"{start_link}Private",
                 ),
             ],
             [

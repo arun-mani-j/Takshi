@@ -207,9 +207,7 @@ class SettingsSession(Session):
         ]
         markup = telegram.InlineKeyboardMarkup.from_row(buttons)
         self.base_message.edit_text(
-            text=text,
-            parse_mode=telegram.ParseMode.HTML,
-            reply_markup=markup,
+            text=text, parse_mode=telegram.ParseMode.HTML, reply_markup=markup,
         )
 
     def send_group_not_found(self):

@@ -7,7 +7,7 @@ class Message:
     CHAT_ID = "Chat ID : <code>{CHAT_ID}</code>\nUser ID : <code>{USER_ID}</code>"
 
     CREATE_BANNER = (
-        "Creating a new group is easy. Just tell me which group for what purpose and I will start monitoring them.\n"
+        "Creating a new group is easy.\nJust tell me which group for what purpose and I will start monitoring them.\n"
         " • <b>Gateway</b> - Public group where new users join and verify they are legit.\n"
         " • <b>Moderation</b> - Admins group where I can report status.\n"
         " • <b>Private Group</b> - The real group where approved users can join.\n"
@@ -23,9 +23,7 @@ class Message:
         "All the saved settings and data will be permanently <b>lost</b> !"
     )
 
-    FORWARD_MESSAGE = (
-        "User ID : {ID}\nUsername : @{USERNAME}\n{NAME}\nChat ID : {CHAT_ID}\n{TEXT}"
-    )
+    FORWARD_MESSAGE = "User ID : <code>{ID}</code>\nUsername : @{USERNAME}\n{NAME}\nChat ID : <code>{CHAT_ID}</code>\n{TEXT}"
 
     DONE = "Done successfully !"
 
@@ -40,10 +38,10 @@ class Message:
     GROUP_NOT_FOUND = "{TITLE} is not found. May be someone deleted it now ?"
 
     HELP = (
-        "I'm a bot who can help you manage gateway groups and join you to groups where I'm assigned.\n"
-        "If someone asked you to personal message me for link, please send /join.\n"
-        "Want to assign me to your groups ? Then send me a /create.\n"
-        "Do you want to say something to admins of a group ? In that case, send /join and select the group. \n"
+        "I'm a bot who can help you manage gateway groups and join you to groups where I'm assigned.\n\n"
+        "• /join - If someone asked you to personal message me for link, please send /join.\n"
+        "• /create - Want to assign me to your groups ? Then send me a /create.\n\n"
+        "Do you want to say something to admins of a group ? In that case, send /join and select the group. \n\n"
         "For more information about me, please visit www.github.com/j-arun-mani/takshi"
     )
 
