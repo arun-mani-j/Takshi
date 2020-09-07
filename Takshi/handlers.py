@@ -286,6 +286,17 @@ def revoke_link(update, context):
     chat.send_message(text=Message.REVOKED_LINK, parse_mode=telegram.ParseMode.HTML)
 
 
+def send_help(update, context):
+
+    message = update.message
+    chat = message.chat
+
+    if chat.type != "private":
+        message.reply_text(text=, parse_mode=telegram.ParseMode.HTML)
+    else:
+        message.reply_text(text=, parse_mode=telegram.ParseMode.HTML)
+
+
 def send_id(update, context):
 
     message = update.message

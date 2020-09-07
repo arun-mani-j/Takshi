@@ -1,0 +1,20 @@
+# About Text
+ I can help you manage gateway groups with ease and peace of mind. 🌐 www.github.com/j-arun-mani/takshi
+
+# Commands
+ approve - Approve the user in tagged message
+ clear - Delete all messages from tagged message
+ create - Create a new group
+ help - Help about various commands
+ id - Get the chat ID and user ID
+ ignore - Ignore the user in tagged message
+ join - Join a new group
+ link - Send the private group link to reply's user
+ restrict - Restrict the user
+ revoke - Revoke the private group link
+ settings - Configure created groups
+ start - Conquer the universe
+
+
+# Description
+ Are you fed up with in-effective group administration bots ? Worry not, with the idea of gateway groups, let's bring back the fun !

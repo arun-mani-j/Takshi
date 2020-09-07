@@ -39,6 +39,16 @@ class Message:
 
     GROUP_NOT_FOUND = "{TITLE} is not found. May be someone deleted it now ?"
 
+    HELP = (
+        "I'm a bot who can help you manage gateway groups and join you to groups where I'm assigned.\n"
+        "If someone asked you to personal message me for link, please send /join.\n"
+        "Want to assign me to your groups ? Then send me a /create.\n"
+        "Do you want to say something to admins of a group ? In that case, send /join and select the group. \n"
+        "For more information about me, please visit www.github.com/j-arun-mani/takshi"
+    )
+
+    HELP_IN_PM = "Hey there ! Please contact me in personal message for help."
+
     IGNORED_USER = "Fine. I'm not bothered about the user now."
 
     INVALID_COMMAND = "What do you mean ? This action will be reported."
@@ -185,7 +195,7 @@ class Message:
         "If you want to create a new group, use /create."
     )
 
-    START = "Hey there ! If you want the link of the group please send me a /link."
+    START = "Hii ! If you want to join a group please send me a /join. For more information, send /help."
 
     START_GROUP = "Yea, I'm here. What's up ?"
 
