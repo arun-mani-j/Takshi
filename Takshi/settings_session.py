@@ -2,7 +2,7 @@ import logging
 import telegram
 
 from .constants import Label, Message
-from .functions import get_admins, get_chat_title, leave_chats
+from .functions import get_admins, get_chat_title, get_intervals, leave_chats
 from .session import Session
 
 
@@ -10,6 +10,7 @@ class SettingsSession(Session):
     def __init__(self, message, context):
 
         Session.__init__(self, message, context)
+        self.bot_data = context.bot_data
         self.editing_prop = None
         self.group_id = None
         self.group_title = None
@@ -20,6 +21,7 @@ class SettingsSession(Session):
 
         chat_ids = self.processor.get_chat_ids(self.group_id)
         leave_chats(chat_ids, self.bot)
+        self.bot_data["intervals"] = get_intervals(self.processor)
         self.processor.delete_group(self.group_id)
         del self.groups[self.group_id]
 
@@ -36,6 +38,7 @@ class SettingsSession(Session):
             )
         else:
             self.processor.set_clean_interval(self.group_id, val)
+            self.bot_data["intervals"] = get_intervals(self.processor)
             self.expire(continued=True)
             text = Message.SET_CLEAN_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val
@@ -71,6 +74,7 @@ class SettingsSession(Session):
             )
         else:
             self.processor.set_refresh_interval(self.group_id, val)
+            self.bot_data["intervals"] = get_intervals(self.processor)
             self.expire(continued=True)
             text = Message.SET_REFRESH_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val

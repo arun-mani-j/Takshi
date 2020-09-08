@@ -2,7 +2,7 @@ from os import getenv
 import logging
 import telegram.ext
 
-from .functions import periodic_job
+from .functions import get_intervals, periodic_job
 from .processor import Processor
 from .handles import handles
 
@@ -16,14 +16,9 @@ class Server:
         )
 
         bot_data = self.updater.dispatcher.bot_data
-        intervals = self.processor.get_intervals()
-        intervals_ = [
-            (id, cln_int, 0, ref_int, 0) for (id, cln_int, ref_int) in intervals
-        ]
-
         bot_data["ALLOW_CREATE"] = getenv("ALLOW_CREATE", "True").lower() == "true"
         bot_data["cache"] = {}
-        bot_data["intervals"] = intervals_
+        bot_data["intervals"] = get_intervals(self.processor)
         bot_data["processor"] = self.processor
 
         self.updater.job_queue.run_repeating(

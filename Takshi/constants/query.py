@@ -68,9 +68,7 @@ class Query:
         "AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
     )
 
-    GET_UNAPPROVED_USERS = (
-        "SELECT user_id FROM users WHERE id = %s AND approved;"
-    )
+    GET_UNAPPROVED_USERS = "SELECT user_id FROM users WHERE id = %s AND approved;"
 
     IGNORE_USER = "DELETE FROM users WHERE id = %s AND user_id = %s;"
 

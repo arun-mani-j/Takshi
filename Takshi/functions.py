@@ -20,6 +20,13 @@ def get_chat_title(chat_id, bot):
     return chat.title
 
 
+def get_intervals(processor):
+
+    intervals = processor.get_intervals()
+    intervals_ = [(id, cln_int, 0, ref_int, 0) for (id, cln_int, ref_int) in intervals]
+    return intervals_
+
+
 def leave_chats(chat_ids, bot):
 
     for chat_id in chat_ids:
@@ -89,6 +96,7 @@ def remove_outdated_users(id, bot, processor):
     for user_id in outdated_users:
         try:
             bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
+            processor.remove_user_from_gateway(id, user_id)
             logging.info(f"ORemove {user_id} from {id}")
         except Exception as error:
             logging.error(error)

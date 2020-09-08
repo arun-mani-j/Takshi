@@ -141,11 +141,10 @@ def handle_left_member(update, context):
     left_user = message.left_chat_member
     id, type = cache[chat.id]
 
-    logging.info(f"Left {user_id} of {id} in {type}")
+    logging.info(f"Left {left_user.id} of {id} in {type}")
 
     if type == 1:
         message.delete()
-        logging.info(f"Left {user_id} of {id}")
         processor.remove_user_from_gateway(id, left_user.id)
     elif type == 3:
         message.delete()
@@ -228,6 +227,8 @@ def handle_new_member(update, context):
         processor.add_users_to_group(id, *user_ids)
         message.delete()
         remove_users_from_chat(user_ids, chat.id, bot)
+        for user_id in user_ids:
+            processor.remove_user_from_gateway(id, user_id)
 
 
 @cache_group
