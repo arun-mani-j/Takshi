@@ -85,7 +85,6 @@ def clear_messages(update, context):
 
 @check_is_group_message
 @check_rights
-@check_is_reply
 def clean_outdated_users(update, context):
 
     bot = context.bot
@@ -258,7 +257,6 @@ def join_group(update, context):
 
 @check_is_group_message
 @check_rights
-@check_is_reply
 def remind_users(update, context):
 
     bot = context.bot
