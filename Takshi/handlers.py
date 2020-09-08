@@ -162,7 +162,7 @@ def handle_message(update, context):
     reply = message.reply_to_message
     _, type = cache[chat.id]
 
-    if type == 2 and reply.from_user.id == bot.id:
+    if type == 2 and and reply and reply.from_user.id == bot.id:
         try:
             chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
         except (ValueError, IndexError):
@@ -358,8 +358,10 @@ def restrict_user(update, context):
 
     if type == 1:
         processor.restrict_user(id, reply.from_user.id)
+        reply.delete()
         message.delete()
         chat.kick_member(user_id=reply.from_user.id)
+        processor.remove_from_gateway(id, reply.from_user.id)
     elif type == 2:
         try:
             user_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
@@ -372,13 +374,17 @@ def restrict_user(update, context):
             gateway_id, _, group_id = processor.get_chat_ids(id)
             bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
             bot.kick_chat_member(chat_id=group_id, user_id=user_id)
+            processor.remove_from_gateway(id, user_id)
+            processor.remove_from_group(id, user_id)
             message.reply_text(
                 text=Message.RESTRICTED_USER, parse_mode=telegram.ParseMode.HTML
             )
     elif type == 3:
         processor.restrict_user(id, reply.from_user.id)
+        reply.delete()
         message.delete()
         chat.kick_member(user_id=reply.from_user.id)
+        processor.remove_from_group(id, user_id)
 
 
 @cache_group
