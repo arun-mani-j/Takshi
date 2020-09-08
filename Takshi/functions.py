@@ -95,9 +95,9 @@ def remove_outdated_users(id, bot, processor):
 
     for user_id in outdated_users:
         try:
+            logging.info(f"ORemove {user_id} from {id}")
             bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
             processor.remove_user_from_gateway(id, user_id)
-            logging.info(f"ORemove {user_id} from {id}")
         except Exception as error:
             logging.error(error)
         else:
