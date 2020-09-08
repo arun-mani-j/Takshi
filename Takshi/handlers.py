@@ -162,7 +162,7 @@ def handle_message(update, context):
     reply = message.reply_to_message
     _, type = cache[chat.id]
 
-    if type == 2 and and reply and reply.from_user.id == bot.id:
+    if type == 2 and reply and reply.from_user.id == bot.id:
         try:
             chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
         except (ValueError, IndexError):
