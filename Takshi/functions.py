@@ -23,7 +23,7 @@ def get_chat_title(chat_id, bot):
 def get_intervals(processor):
 
     intervals = processor.get_intervals()
-    intervals_ = [(id, cln_int, 0, ref_int, 0) for (id, cln_int, ref_int) in intervals]
+    intervals_ = {id: (cln_int, 0, ref_int, 0) for (id, cln_int, ref_int) in intervals}
     return intervals_
 
 
@@ -114,15 +114,15 @@ def periodic_job(context):
     processor = context.bot_data["processor"]
     intervals = context.bot_data["intervals"]
 
-    for _ in range(len(intervals)):
-        id, cln_int, cur_cln_val, ref_int, cur_ref_val = intervals.pop(0)
+    for id in intervals:
+        cln_int, cur_cln_val, ref_int, cur_ref_val = intervals[id]
 
-        if cur_cln_val >= cln_int / 2:
-            remind_unapproved_users(id, bot, processor)
-
-        if cur_cln_val == cln_int:
+        if cur_cln_val >= cln_int:
             remove_outdated_users(id, bot, processor)
             cur_cln_val = 0
+
+        if cur_cln_val == cln_int / 2:
+            remind_unapproved_users(id, bot, processor)
 
         cur_cln_val += 1
 
@@ -132,4 +132,4 @@ def periodic_job(context):
 
         cur_ref_val += 1
 
-        intervals.append((id, cln_int, cur_cln_val, ref_int, cur_ref_val))
+        intervals[id] = (cln_int, cur_cln_val, ref_int, cur_ref_val)

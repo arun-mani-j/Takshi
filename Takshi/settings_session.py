@@ -21,8 +21,8 @@ class SettingsSession(Session):
 
         chat_ids = self.processor.get_chat_ids(self.group_id)
         leave_chats(chat_ids, self.bot)
-        self.bot_data["intervals"] = get_intervals(self.processor)
         self.processor.delete_group(self.group_id)
+        del self.bot_data["intervals"][self.group_id]
         del self.groups[self.group_id]
 
     def do_change_clean_interval(self, interval):
@@ -38,7 +38,9 @@ class SettingsSession(Session):
             )
         else:
             self.processor.set_clean_interval(self.group_id, val)
-            self.bot_data["intervals"] = get_intervals(self.processor)
+            cln, cur_cln, ref, cur_ref = self.bot_data["intervals"][self.group_id]
+            self.bot_data["intervals"][self.group_id] = (val, cur_cln, ref, cur_ref)
+
             self.expire(continued=True)
             text = Message.SET_CLEAN_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val
@@ -74,7 +76,9 @@ class SettingsSession(Session):
             )
         else:
             self.processor.set_refresh_interval(self.group_id, val)
-            self.bot_data["intervals"] = get_intervals(self.processor)
+            cln, cur_cln, ref, cur_ref = self.bot_data["intervals"][self.group_id]
+            self.bot_data["intervals"][self.group_id] = (cln, cur_cln, val, cur_ref)
+
             self.expire(continued=True)
             text = Message.SET_REFRESH_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val
