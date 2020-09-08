@@ -100,6 +100,8 @@ class Message:
 
     MENTION = "<a href='tg://user?id={USER_ID}'>{CAPTION}</a>"
 
+    NOTIFIED_USERS = "As a part of notifying, I notified {COUNT} users."
+
     NO_COMMON_GROUPS = "We have no groups in common. Are you sure that it was me in the gateway group ?"
 
     PM_COMMAND = "This command is meant to be used in private message. Please contact me in personal message."
@@ -113,7 +115,7 @@ class Message:
         "If you continue to remain <i>silent</i> you will be <b>removed</b> from the group soon !"
     )
 
-    REMOVED_OUTDATED_USERS = "As a part of regular clean up, I removed {COUNT} users."
+    REMOVED_OUTDATED_USERS = "As a part of clean up, I removed {COUNT} users."
 
     REMOVED_USER = "I have removed the user."
 

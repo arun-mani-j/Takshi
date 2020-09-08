@@ -1,13 +1,14 @@
+import telegram
 from .constants import Message
 
 
 def cache_group(func):
     def wrapped(update, context):
 
+        cache = context.bot_data["cache"]
         processor = context.bot_data["processor"]
-        cache = context.bot_data["cache"] = {}
         message = update.message
-        chatid = message.chat
+        chat = message.chat
 
         try:
             cache[chat.id]
@@ -15,6 +16,8 @@ def cache_group(func):
             cache[chat.id] = processor.find_id(chat.id)
 
         func(update, context)
+
+    return wrapped
 
 
 def check_is_group_message(func):
@@ -83,7 +86,7 @@ def check_valid_group(func):
 
         cache = context.bot_data["cache"]
         message = update.message
-        processor = context.bot_data["processor"]
+        chat = message.chat
         id, type = cache[chat.id]
 
         if id and type:
@@ -92,3 +95,5 @@ def check_valid_group(func):
             message.reply_text(
                 text=Message.INVALID_GROUP, parse_mode=telegram.ParseMode.HTML
             )
+
+    return wrapped

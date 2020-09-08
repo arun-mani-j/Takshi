@@ -86,7 +86,7 @@ class SettingsSession(Session):
         if data == "delCfm":
             text = Message.GROUP_DELETED.format(TITLE=self.group_title)
             self.do_delete_group()
-            query.answer(text=Message.GROUP_DELETED, show_alert=True)
+            query.answer(text=text, show_alert=True)
             self.send_select_group()
             return
 

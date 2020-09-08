@@ -284,6 +284,7 @@ class Processor:
 
     def remove_user_from_gateway(self, id, user_id):
 
+        logging.info(f"Remove {user_id} from {id}")
         cursor = self.connection.cursor()
         cursor.execute(Query.REMOVE_USER_GATEWAY, (id, user_id))
         cursor.close()

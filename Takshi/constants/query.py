@@ -47,9 +47,9 @@ class Query:
     GET_MODERATE_ID = "SELECT moderate_id FROM groups WHERE id = %s;"
 
     GET_OUTDATED_USERS = (
-        "SELECT user_id FROM groups, users "
-        "WHERE groups.id = users.id AND groups.id = %s "
-        "AND users.in_gateway = TRUE "
+        "SELECT user_id FROM users "
+        "JOIN groups ON users.id = groups.id "
+        "WHERE groups.id = %s AND users.in_gateway "
         "AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
     )
 
@@ -62,14 +62,14 @@ class Query:
     GET_TITLE = "SELECT title FROM groups WHERE id = %s;"
 
     GET_TO_REMIND_USERS = (
-        "SELECT user_id FROM groups, users "
-        "WHERE groups.id = users.id AND groups.id = %s "
-        "AND users.in_gateway = TRUE "
+        "SELECT user_id FROM users "
+        "JOIN groups ON users.id = groups.id "
+        "WHERE groups.id = %s AND users.in_gateway = TRUE "
         "AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
     )
 
     GET_UNAPPROVED_USERS = (
-        "SELECT user_id FROM users WHERE id = %s AND approved = FALSE;"
+        "SELECT user_id FROM users WHERE id = %s AND approved;"
     )
 
     IGNORE_USER = "DELETE FROM users WHERE id = %s AND user_id = %s;"

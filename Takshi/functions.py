@@ -39,19 +39,30 @@ def refresh_invite_link(id, bot, processor):
 def remind_unapproved_users(id, bot, processor):
 
     gateway_id = processor.get_gateway_id(id)
+    moderate_id = processor.get_moderate_id(id)
     unapproved = processor.get_to_remind_users(id)
+    count = 0
+    msg_bits = []
 
-    notify_msg = " ".join(
-        Message.MENTION.format(CAPTION=i, USER_ID=user_id)
-        for i, user_id in enumerate(unapproved)
-    )
-    if not notify_msg.strip():
-        return
-    msg = bot.send_message(
-        chat_id=gateway_id, text=notify_msg, parse_mode=telegram.ParseMode.HTML
-    )
-    msg.edit_text(
-        text=Message.REMIND_UNAPPROVED_USERS, parse_mode=telegram.ParseMode.HTML
+    for i, user_id in enumerate(unapproved):
+        logging.info(f"Notify {user_id} of {id}")
+        msg = Message.MENTION.format(CAPTION=i, USER_ID=user_id)
+        msg_bits.append(msg)
+        count += 1
+    notify_msg = " ".join(msg_bits)
+
+    if count:
+        msg = bot.send_message(
+            chat_id=gateway_id, text=notify_msg, parse_mode=telegram.ParseMode.HTML
+        )
+        msg.edit_text(
+            text=Message.REMIND_UNAPPROVED_USERS, parse_mode=telegram.ParseMode.HTML
+        )
+
+    bot.send_message(
+        chat_id=moderate_id,
+        text=Message.NOTIFIED_USERS.format(COUNT=count),
+        parse_mode=telegram.ParseMode.HTML,
     )
 
 
@@ -78,6 +89,7 @@ def remove_outdated_users(id, bot, processor):
     for user_id in outdated_users:
         try:
             bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
+            logging.info(f"ORemove {user_id} from {id}")
         except Exception as error:
             logging.error(error)
         else:

@@ -21,8 +21,8 @@ from .wrappers import (
 )
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply
@@ -71,6 +71,8 @@ def approve_user(update, context):
         )
 
 
+@cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply
@@ -88,8 +90,8 @@ def clear_messages(update, context):
             logging.error(e)
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 def clean_outdated_users(update, context):
@@ -128,8 +130,8 @@ def create_group(update, context):
     context.user_data["session"] = session
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 def handle_left_member(update, context):
 
     cache = context.bot_data["cache"]
@@ -139,25 +141,27 @@ def handle_left_member(update, context):
     left_user = message.left_chat_member
     id, type = cache[chat.id]
 
+    logging.info(f"Left {user_id} of {id} in {type}")
+
     if type == 1:
         message.delete()
+        logging.info(f"Left {user_id} of {id}")
         processor.remove_user_from_gateway(id, left_user.id)
     elif type == 3:
         message.delete()
         processor.remove_user_from_group(id, left_user.id)
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 def handle_message(update, context):
 
     bot = context.bot
     cache = context.bot_data["cache"]
-    processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    id, type = cache[chat.id]
+    _, type = cache[chat.id]
 
     if type == 2 and reply.from_user.id == bot.id:
         try:
@@ -204,8 +208,8 @@ def handle_query(update, context):
         )
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 def handle_new_member(update, context):
 
     bot = context.bot
@@ -226,8 +230,8 @@ def handle_new_member(update, context):
         remove_users_from_chat(user_ids, chat.id, bot)
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply
@@ -273,8 +277,8 @@ def join_group(update, context):
     context.user_data["session"] = session
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 def remind_users(update, context):
@@ -297,8 +301,8 @@ def remind_users(update, context):
         message.delete()
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply
@@ -336,8 +340,8 @@ def request_explanation(update, context):
         )
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply
@@ -376,8 +380,8 @@ def restrict_user(update, context):
         chat.kick_member(user_id=reply.from_user.id)
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 def revoke_link(update, context):
@@ -422,8 +426,8 @@ def send_id(update, context):
     message.reply_text(text=text, parse_mode=telegram.ParseMode.HTML)
 
 
-@check_valid_group
 @cache_group
+@check_valid_group
 @check_is_group_message
 @check_rights
 @check_is_reply

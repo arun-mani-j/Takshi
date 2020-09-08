@@ -15,7 +15,7 @@ class JoinSession(Session):
         if context.args and context.args[0].startswith("join="):
             try:
                 id = int(context.args[0].lstrip("join="))
-            except (IndexError, ValueError) as e:
+            except (IndexError, ValueError):
                 logging.error("Asked to join invalid id %s", id)
             else:
                 self.do_join_group(id, edit=False)
