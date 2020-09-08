@@ -141,8 +141,6 @@ def handle_left_member(update, context):
     left_user = message.left_chat_member
     id, type = cache[chat.id]
 
-    logging.info(f"Left {left_user.id} of {id} in {type}")
-
     if type == 1:
         message.delete()
         processor.remove_user_from_gateway(id, left_user.id)

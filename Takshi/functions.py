@@ -52,7 +52,6 @@ def remind_unapproved_users(id, bot, processor):
     msg_bits = []
 
     for i, user_id in enumerate(unapproved):
-        logging.info(f"Notify {user_id} of {id}")
         msg = Message.MENTION.format(CAPTION=i, USER_ID=user_id)
         msg_bits.append(msg)
         count += 1
@@ -95,7 +94,6 @@ def remove_outdated_users(id, bot, processor):
 
     for user_id in outdated_users:
         try:
-            logging.info(f"ORemove {user_id} from {id}")
             bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
             processor.remove_user_from_gateway(id, user_id)
         except Exception as error:
@@ -134,5 +132,4 @@ def periodic_job(context):
 
         cur_ref_val += 1
 
-        logging.info((id, cln_int, cur_cln_val, ref_int, cur_ref_val))
         intervals.append((id, cln_int, cur_cln_val, ref_int, cur_ref_val))
