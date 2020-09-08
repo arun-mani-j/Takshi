@@ -61,6 +61,8 @@ class Message:
         "I'm not able to understand that message. Is it the right message ?"
     )
 
+    INVALID_GROUP = "I have not been assigned to this group. Admins, did you add me through /create ?"
+
     INVALID_ID = "No group found with the given ID."
 
     INVALID_INTERVAL = "Please send a positive integer."
@@ -75,6 +77,8 @@ class Message:
     INVALID_QUERY = "The button click was totally unexpected. Please try again the previous process."
 
     INVALID_REPLY = "You should reply to a message for this action to proceed."
+
+    INVALID_RIGHTS = "I do not have the rights, it seems..."
 
     INVALID_SESSION_MESSAGE = (
         "I didn't ask you a text message. Please reply using above buttons."

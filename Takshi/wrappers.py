@@ -1,6 +1,22 @@
 from .constants import Message
 
 
+def cache_group(func):
+    def wrapped(update, context):
+
+        processor = context.bot_data["processor"]
+        cache = context.bot_data["cache"] = {}
+        message = update.message
+        chatid = message.chat
+
+        try:
+            cache[chat.id]
+        except KeyError:
+            cache[chat.id] = processor.find_id(chat.id)
+
+        func(update, context)
+
+
 def check_is_group_message(func):
     def wrapped(update, context):
 
@@ -45,12 +61,13 @@ def check_is_reply(func):
 def check_rights(func):
     def wrapped(update, context):
 
+        cache = context.bot_data["cache"]
         processor = context.bot_data["processor"]
         message = update.message
         chat = message.chat
         user = message.from_user
 
-        id, _ = processor.find_id(chat.id)
+        id, _ = cache[chat.id]
         allowed = processor.is_admin(id, user.id)
 
         if message and allowed:
@@ -59,3 +76,19 @@ def check_rights(func):
             message.reply_text(Message.INVALID_COMMAND)
 
     return wrapped
+
+
+def check_valid_group(func):
+    def wrapped(update, context):
+
+        cache = context.bot_data["cache"]
+        message = update.message
+        processor = context.bot_data["processor"]
+        id, type = cache[chat.id]
+
+        if id and type:
+            func(update, context)
+        else:
+            message.reply_text(
+                text=Message.INVALID_GROUP, parse_mode=telegram.ParseMode.HTML
+            )

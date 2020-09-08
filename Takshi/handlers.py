@@ -12,24 +12,29 @@ from .join_session import JoinSession
 from .constants import Label, Message
 from .settings_session import SettingsSession
 from .wrappers import (
+    cache_group,
     check_is_group_message,
     check_is_private_message,
     check_is_reply,
     check_rights,
+    check_valid_group,
 )
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 @check_is_reply
 def approve_user(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 1:
         processor.approve_user(id, reply.from_user.id)
@@ -83,15 +88,18 @@ def clear_messages(update, context):
             logging.error(e)
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 def clean_outdated_users(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type in (1, 2):
         remove_outdated_users(id, bot, processor)
@@ -120,15 +128,16 @@ def create_group(update, context):
     context.user_data["session"] = session
 
 
+@check_valid_group
+@cache_group
 def handle_left_member(update, context):
 
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
-
     message = update.message
     chat = message.chat
     left_user = message.left_chat_member
-
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 1:
         message.delete()
@@ -138,14 +147,17 @@ def handle_left_member(update, context):
         processor.remove_user_from_group(id, left_user.id)
 
 
+@check_valid_group
+@cache_group
 def handle_message(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    _, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 2 and reply.from_user.id == bot.id:
         try:
@@ -192,15 +204,18 @@ def handle_query(update, context):
         )
 
 
+@check_valid_group
+@cache_group
 def handle_new_member(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     new_members = message.new_chat_members
     user_ids = [user.id for user in new_members]
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 1:
         processor.add_users_to_gateway(id, *user_ids)
@@ -211,17 +226,20 @@ def handle_new_member(update, context):
         remove_users_from_chat(user_ids, chat.id, bot)
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 @check_is_reply
 def ignore_user(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
     moderate_id = processor.get_moderate_id(id)
 
     if type in (1, 3):
@@ -255,15 +273,18 @@ def join_group(update, context):
     context.user_data["session"] = session
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 def remind_users(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type in (1, 2):
         remind_unapproved_users(id, bot, processor)
@@ -276,17 +297,20 @@ def remind_users(update, context):
         message.delete()
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 @check_is_reply
 def request_explanation(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
     prompt = processor.get_prompt(id)
 
     if type == 1:
@@ -312,17 +336,20 @@ def request_explanation(update, context):
         )
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 @check_is_reply
 def restrict_user(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 1:
         processor.restrict_user(id, reply.from_user.id)
@@ -349,15 +376,18 @@ def restrict_user(update, context):
         chat.kick_member(user_id=reply.from_user.id)
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 def revoke_link(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     refresh_invite_link(id, bot, processor)
 
@@ -392,17 +422,20 @@ def send_id(update, context):
     message.reply_text(text=text, parse_mode=telegram.ParseMode.HTML)
 
 
+@check_valid_group
+@cache_group
 @check_is_group_message
 @check_rights
 @check_is_reply
 def send_link(update, context):
 
     bot = context.bot
+    cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
     message = update.message
     reply = message.reply_to_message
     chat = message.chat
-    id, type = processor.find_id(chat.id)
+    id, type = cache[chat.id]
 
     if type == 1:
         message.delete()
