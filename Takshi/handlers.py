@@ -88,7 +88,7 @@ def clear_messages(update, context):
 def clean_outdated_users(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     id, type = processor.find_id(chat.id)
@@ -260,7 +260,7 @@ def join_group(update, context):
 def remind_users(update, context):
 
     bot = context.bot
-    processor = context["processor"]
+    processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     id, type = processor.find_id(chat.id)
