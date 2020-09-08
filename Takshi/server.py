@@ -22,6 +22,7 @@ class Server:
         ]
 
         bot_data["ALLOW_CREATE"] = getenv("ALLOW_CREATE", "True").lower() == "true"
+        bot_data["cache"] = {}
         bot_data["intervals"] = intervals_
         bot_data["processor"] = self.processor
 
