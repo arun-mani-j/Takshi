@@ -3,6 +3,7 @@
 
 # Commands
  approve - Approve the user in tagged message
+ clean - Remove unapproved users from gateway
  clear - Delete all messages from tagged message
  create - Create a new group
  help - Help about various commands
@@ -10,6 +11,7 @@
  ignore - Ignore the user in tagged message
  join - Join a new group
  link - Send the private group link to reply's user
+ remind - Remind unapproved users in gateway
  restrict - Restrict the user
  revoke - Revoke the private group link
  settings - Configure created groups

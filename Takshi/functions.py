@@ -50,7 +50,9 @@ def remind_unapproved_users(id, bot, processor):
     msg = bot.send_message(
         chat_id=gateway_id, text=notify_msg, parse_mode=telegram.ParseMode.HTML
     )
-    msg.edit_text(text=Message.REMIND_UNAPPROVED_USERS)
+    msg.edit_text(
+        text=Message.REMIND_UNAPPROVED_USERS, parse_mode=telegram.ParseMode.HTML
+    )
 
 
 def remove_users_from_chat(user_ids, chat_id, bot):
@@ -70,12 +72,12 @@ def remove_outdated_users(id, bot, processor):
 
     gateway_id = processor.get_gateway_id(id)
     moderate_id = processor.get_moderate_id(id)
-    outdated_users = processor.get_outdated_users(id)
+    outdated_users = list(processor.get_outdated_users(id))
     count = 0
 
     for user_id in outdated_users:
         try:
-            bot.kick_chat_member(user_id=user_id, chat_id=gateway_id)
+            bot.kick_chat_member(chat_id=gateway_id, user_id=user_id)
         except Exception as error:
             logging.error(error)
         else:
@@ -97,16 +99,20 @@ def periodic_job(context):
     for _ in range(len(intervals)):
         id, cln_int, cur_cln_val, ref_int, cur_ref_val = intervals.pop(0)
 
-        if cur_cln_val == cln_int // 2:
+        if cur_cln_val >= cln_int / 2:
             remind_unapproved_users(id, bot, processor)
-        elif cur_cln_val == cln_int:
+
+        if cur_cln_val == cln_int:
             remove_outdated_users(id, bot, processor)
             cur_cln_val = 0
+
         cur_cln_val += 1
 
         if cur_ref_val == ref_int:
             refresh_invite_link(id, bot, processor)
             cur_ref_val = 0
+
         cur_ref_val += 1
 
+        logging.info((id, cln_int, cur_cln_val, ref_int, cur_ref_val))
         intervals.append((id, cln_int, cur_cln_val, ref_int, cur_ref_val))

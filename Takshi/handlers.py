@@ -4,7 +4,9 @@ import telegram
 from .create_session import CreateSession
 from .functions import (
     refresh_invite_link,
+    remind_unapproved_users,
     remove_users_from_chat,
+    remove_outdated_users,
 )
 from .join_session import JoinSession
 from .constants import Label, Message
@@ -33,10 +35,10 @@ def approve_user(update, context):
         processor.approve_user(id, reply.from_user.id)
         message.delete()
         button = telegram.InlineKeyboardButton(
-            text=Label.GET_LINK, url=f"{bot.link}?start=join"
+            text=Label.GET_LINK, url=f"{bot.link}?start=join={id}"
         )
         markup = telegram.InlineKeyboardMarkup.from_button(button)
-        reply.send_message(
+        reply.reply_text(
             text=Message.PM_FOR_LINK,
             parse_mode=telegram.ParseMode.HTML,
             reply_markup=markup,
@@ -79,6 +81,28 @@ def clear_messages(update, context):
             bot.delete_message(chat_id=chat.id, message_id=msg_id)
         except telegram.TelegramError as e:
             logging.error(e)
+
+
+@check_is_group_message
+@check_rights
+@check_is_reply
+def clean_outdated_users(update, context):
+
+    bot = context.bot
+    processor = context["processor"]
+    message = update.message
+    chat = message.chat
+    id, type = processor.find_id(chat.id)
+
+    if type in (1, 2):
+        remove_outdated_users(id, bot, processor)
+    else:
+        message.reply_text(
+            text=Message.INVALID_COMMAND, parse_mode=telegram.ParseMode.HTML
+        )
+
+    if type == 1:
+        message.delete()
 
 
 @check_is_private_message
@@ -134,7 +158,7 @@ def handle_message(update, context):
         else:
             bot.send_message(
                 chat_id=chat_id,
-                text=message.html_urled,
+                text=message.text_html_urled,
                 parse_mode=telegram.ParseMode.HTML,
             )
             message.reply_text(
@@ -180,10 +204,10 @@ def handle_new_member(update, context):
     id, type = processor.find_id(chat.id)
 
     if type == 1:
-        processor.add_users_to_gateway(id, user_ids)
+        processor.add_users_to_gateway(id, *user_ids)
         message.delete()
     elif type == 3:
-        processor.add_users_to_group(id, user_ids)
+        processor.add_users_to_group(id, *user_ids)
         message.delete()
         remove_users_from_chat(user_ids, chat.id, bot)
 
@@ -193,18 +217,26 @@ def handle_new_member(update, context):
 @check_is_reply
 def ignore_user(update, context):
 
+    bot = context.bot
     processor = context.bot_data["processor"]
     message = update.message
     chat = message.chat
     reply = message.reply_to_message
     id, type = processor.find_id(chat.id)
+    moderate_id = processor.get_moderate_id(id)
 
     if type in (1, 3):
         processor.ignore_user(id, reply.from_user.id)
         message.delete()
+        bot.send_message(
+            chat_id=moderate_id,
+            text=Message.IGNORED_USER,
+            parse_mode=telegram.ParseMode.HTML,
+        )
+
     elif type == 2:
         try:
-            chat_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
+            user_id = int(reply.text.split("\n", 1)[0].split(":")[1].strip())
         except (ValueError, IndexError):
             message.reply_text(
                 text=Message.INVALID_FORWARD, parse_mode=telegram.ParseMode.HTML
@@ -222,6 +254,28 @@ def join_group(update, context):
     message = update.message
     session = JoinSession(message, context)
     context.user_data["session"] = session
+
+
+@check_is_group_message
+@check_rights
+@check_is_reply
+def remind_users(update, context):
+
+    bot = context.bot
+    processor = context["processor"]
+    message = update.message
+    chat = message.chat
+    id, type = processor.find_id(chat.id)
+
+    if type in (1, 2):
+        remind_unapproved_users(id, bot, processor)
+    else:
+        message.reply_text(
+            text=Message.INVALID_COMMAND, parse_mode=telegram.ParseMode.HTML
+        )
+
+    if type == 1:
+        message.delete()
 
 
 @check_is_group_message

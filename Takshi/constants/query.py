@@ -34,7 +34,9 @@ class Query:
         "SELECT gateway_id, moderate_id, private_group_id FROM groups WHERE id = %s;"
     )
 
-    GET_GROUPS = "SELECT id, title FROM groups WHERE %s = ANY(admins);"
+    GET_CONTROLLED_GROUPS = "SELECT id, title FROM groups WHERE %s = ANY(admins);"
+
+    GET_GROUPS = "SELECT groups.id, groups.title FROM groups, users WHERE groups.id = users.id AND users.user_id = %s;"
 
     GET_GATEWAY_ID = "SELECT gateway_id FROM groups WHERE id = %s;"
 
@@ -46,7 +48,9 @@ class Query:
 
     GET_OUTDATED_USERS = (
         "SELECT user_id FROM groups, users "
-        "WHERE groups.id = users.id AND groups.id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
+        "WHERE groups.id = users.id AND groups.id = %s "
+        "AND users.in_gateway = TRUE "
+        "AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval;"
     )
 
     GET_PRIVATE_GROUP_ID = "SELECT private_group_id FROM groups WHERE id = %s;"
@@ -59,7 +63,9 @@ class Query:
 
     GET_TO_REMIND_USERS = (
         "SELECT user_id FROM groups, users "
-        "WHERE groups.id = users.id AND groups.id = %s AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
+        "WHERE groups.id = users.id AND groups.id = %s "
+        "AND users.in_gateway = TRUE "
+        "AND EXTRACT(EPOCH FROM (NOW() - users.joined)) / 60 >= groups.clean_interval / 2;"
     )
 
     GET_UNAPPROVED_USERS = (

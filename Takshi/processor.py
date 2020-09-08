@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 
 from .constants import Query
@@ -15,17 +16,19 @@ class Processor:
         for user_id in user_ids:
             args.extend((id, user_id))
         list_s = "(%s, %s, TRUE)," * len(user_ids)
+        list_s = list_s[:-1]
         cursor.execute(Query.ADD_USER_GATEWAY.format(LIST_S=list_s), args)
         cursor.close()
         self.connection.commit()
 
-    def add_users_to_group(self, *user_ids):
+    def add_users_to_group(self, id, *user_ids):
 
         cursor = self.connection.cursor()
         args = []
         for user_id in user_ids:
             args.extend((id, user_id))
         list_s = "(%s, %s, TRUE)," * len(user_ids)
+        list_s = list_s[:-1]
         cursor.execute(Query.ADD_USER_PRIVATE_GROUP.format(LIST_S=list_s), args)
         cursor.close()
         self.connection.commit()
@@ -112,6 +115,14 @@ class Processor:
         cursor.close()
         return chat_ids
 
+    def get_controlled_groups(self, admin_id):
+
+        cursor = self.connection.cursor()
+        cursor.execute(Query.GET_CONTROLLED_GROUPS, (admin_id,))
+        groups = dict(cursor)
+        cursor.close()
+        return groups
+
     def get_eligible_for_link(self, id, user_id):
 
         cursor = self.connection.cursor()
@@ -172,7 +183,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_OUTDATED_USERS, (id,))
-        for user_id in cursor:
+        for (user_id,) in cursor:
             yield user_id
         cursor.close()
 
@@ -212,7 +223,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_TO_REMIND_USERS, (id,))
-        for user_id in cursor:
+        for (user_id,) in cursor:
             yield user_id
         cursor.close()
 
@@ -220,7 +231,7 @@ class Processor:
 
         cursor = self.connection.cursor()
         cursor.execute(Query.GET_UNAPPROVED_USERS, (id,))
-        for user_id in cursor:
+        for (user_id,) in cursor:
             yield user_id
         cursor.close()
 
@@ -229,6 +240,7 @@ class Processor:
         cursor = self.connection.cursor()
         cursor.execute(Query.IGNORE_USER, (id, user_id))
         cursor.close()
+        self.connection.commit()
 
     def is_admin(self, id, user_id):
 

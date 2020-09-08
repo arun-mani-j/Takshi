@@ -27,10 +27,10 @@ class JoinSession(Session):
         if edit:
             sender = self.base_message.edit_text
         else:
-            sender = self.base_message.send_message
+            sender = self.chat.send_message
 
         self.group_id = id
-        self.group_title = self.groups[id]
+        self.group_title = self.groups.get(id, None)
 
         eligible = self.processor.get_eligible_for_link(id, self.user.id)
         link = self.processor.get_invite_link(id)
@@ -137,7 +137,7 @@ class JoinSession(Session):
         if edit:
             sender = self.base_message.edit_text
         else:
-            sender = self.base_message.send_message
+            sender = self.chat.send_message
 
         if not self.groups:
             sender(text=Message.NO_COMMON_GROUPS, parse_mode=telegram.ParseMode.HTML)

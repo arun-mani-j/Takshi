@@ -94,7 +94,7 @@ class Message:
 
     LINK_REFRESHED = "Link refreshed."
 
-    MENTION = "<a href='tg://user?id={USER_ID}'>{CAPTION}</a"
+    MENTION = "<a href='tg://user?id={USER_ID}'>{CAPTION}</a>"
 
     NO_COMMON_GROUPS = "We have no groups in common. Are you sure that it was me in the gateway group ?"
 
@@ -105,7 +105,7 @@ class Message:
     PROMPT = "{PROMPT}"
 
     REMIND_UNAPPROVED_USERS = (
-        "A reminder that you have not explained your eligibility to join the private group."
+        "A reminder that you have not explained your eligibility to join the private group. "
         "If you continue to remain <i>silent</i> you will be <b>removed</b> from the group soon !"
     )
 

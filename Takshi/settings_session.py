@@ -10,11 +10,10 @@ class SettingsSession(Session):
     def __init__(self, message, context):
 
         Session.__init__(self, message, context)
-        self.base_message = None
         self.editing_prop = None
         self.group_id = None
         self.group_title = None
-        self.groups = self.processor.get_groups(self.user.id)
+        self.groups = self.processor.get_controlled_groups(self.user.id)
         self.send_select_group(edit=False)
 
     def do_delete_group(self):
@@ -212,7 +211,7 @@ class SettingsSession(Session):
 
     def send_group_not_found(self):
 
-        self.groups = self.processor.get_groups(self.user.id)
+        self.groups = self.processor.get_controlled_groups(self.user.id)
         text = Message.GROUP_NOT_FOUND.format(TITLE=self.group_title)
         self.base_message.edit_text(text=text, parse_mode=telegram.ParseMode.HTML)
         self.send_select_group()
@@ -222,7 +221,7 @@ class SettingsSession(Session):
         if edit:
             sender = self.base_message.edit_text
         else:
-            sender = self.base_message.send_message
+            sender = self.chat.send_message
 
         if not self.groups:
             msg = sender(
@@ -248,7 +247,7 @@ class SettingsSession(Session):
         if edit:
             sender = self.base_message.edit_text
         else:
-            sender = self.base_message.send_message
+            sender = self.chat.send_message
 
         text = Message.SETTINGS_SELECT_PROPERTY.format(TITLE=self.group_title)
         buttons = [

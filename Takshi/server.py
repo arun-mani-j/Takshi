@@ -18,7 +18,7 @@ class Server:
         bot_data = self.updater.dispatcher.bot_data
         intervals = self.processor.get_intervals()
         intervals_ = [
-            (id, cln_int, 1, ref_int, 1) for (id, cln_int, ref_int) in intervals
+            (id, cln_int, 0, ref_int, 0) for (id, cln_int, ref_int) in intervals
         ]
 
         bot_data["ALLOW_CREATE"] = getenv("ALLOW_CREATE", "True").lower() == "true"
