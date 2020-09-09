@@ -41,7 +41,7 @@ class SettingsSession(Session):
             cln, cur_cln, ref, cur_ref = self.bot_data["intervals"][self.group_id]
             self.bot_data["intervals"][self.group_id] = (val, cur_cln, ref, cur_ref)
 
-            self.expire(continued=True)
+            self.base_message.edit_reply_markup(reply_markup=None)
             text = Message.SET_CLEAN_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val
             )
@@ -53,7 +53,7 @@ class SettingsSession(Session):
         prompt = prompt.strip()
         if prompt:
             self.processor.set_prompt(self.group_id, prompt)
-            self.expire(continued=True)
+            self.base_message.edit_reply_markup(reply_markup=None)
             text = Message.SET_PROMPT.format(TITLE=self.group_title)
             self.chat.send_message(text=text, parse_mode=telegram.ParseMode.HTML)
             self.send_select_property(edit=False)
@@ -79,7 +79,7 @@ class SettingsSession(Session):
             cln, cur_cln, ref, cur_ref = self.bot_data["intervals"][self.group_id]
             self.bot_data["intervals"][self.group_id] = (cln, cur_cln, val, cur_ref)
 
-            self.expire(continued=True)
+            self.base_message.edit_reply_markup(reply_markup=None)
             text = Message.SET_REFRESH_INTERVAL.format(
                 TITLE=self.group_title, INTERVAL=val
             )
