@@ -80,8 +80,8 @@
 ## Quick Start ##
  For you all, who are not ready to host the bot yourself, you can use the instance I host.
  It is available under name [@TakshiBot](http://t.me/TakshiBot). Start the bot and type `/create`.
- Then the bot will tell you what you what to do.
- 
+ Then the bot will tell you what to do.
+ Have a look at the [Wiki](https://github.com/J-Arun-Mani/Takshi/wiki) for description of commands and extras.
  Please be aware that this instance runs on a free plan in Heroku, so you know, anything unexpected may happen at expected times.
 
 ## Installation ##
