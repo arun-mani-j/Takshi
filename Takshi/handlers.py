@@ -1,5 +1,6 @@
 import logging
 import telegram
+from telegram.ext import CallbackContext
 
 from .create_session import CreateSession
 from .functions import (
@@ -26,7 +27,7 @@ from .wrappers import (
 @check_is_group_message
 @check_rights
 @check_is_reply
-def approve_user(update, context):
+def approve_user(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -75,26 +76,7 @@ def approve_user(update, context):
 @check_valid_group
 @check_is_group_message
 @check_rights
-@check_is_reply
-def clear_messages(update, context):
-
-    bot = context.bot
-    chat = update.message.chat
-    to_id = update.message.message_id
-    from_id = update.message.reply_to_message.message_id
-
-    for msg_id in range(from_id, to_id + 1):
-        try:
-            bot.delete_message(chat_id=chat.id, message_id=msg_id)
-        except telegram.TelegramError as e:
-            logging.error(e)
-
-
-@cache_group
-@check_valid_group
-@check_is_group_message
-@check_rights
-def clean_outdated_users(update, context):
+def clean_outdated_users(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -112,6 +94,25 @@ def clean_outdated_users(update, context):
 
     if type == 1:
         message.delete()
+
+
+@cache_group
+@check_valid_group
+@check_is_group_message
+@check_rights
+@check_is_reply
+def clear_messages(update: telegram.Update, context: CallbackContext):
+
+    bot = context.bot
+    chat = update.message.chat
+    to_id = update.message.message_id
+    from_id = update.message.reply_to_message.message_id
+
+    for msg_id in range(from_id, to_id + 1):
+        try:
+            bot.delete_message(chat_id=chat.id, message_id=msg_id)
+        except telegram.TelegramError as e:
+            logging.error(e)
 
 
 @check_is_private_message
@@ -132,7 +133,7 @@ def create_group(update, context):
 
 @cache_group
 @check_valid_group
-def handle_left_member(update, context):
+def handle_left_member(update: telegram.Update, context: CallbackContext):
 
     cache = context.bot_data["cache"]
     processor = context.bot_data["processor"]
@@ -151,7 +152,7 @@ def handle_left_member(update, context):
 
 @cache_group
 @check_valid_group
-def handle_message(update, context):
+def handle_message(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -178,7 +179,7 @@ def handle_message(update, context):
             )
 
 
-def handle_private_message(update, context):
+def handle_private_message(update: telegram.Update, context: CallbackContext):
 
     message = update.message
     session = context.user_data.get("session", None)
@@ -191,7 +192,7 @@ def handle_private_message(update, context):
         )
 
 
-def handle_query(update, context):
+def handle_query(update: telegram.Update, context: CallbackContext):
 
     query = update.callback_query
     session = context.user_data.get("session", None)
@@ -207,7 +208,7 @@ def handle_query(update, context):
 
 @cache_group
 @check_valid_group
-def handle_new_member(update, context):
+def handle_new_member(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -234,7 +235,7 @@ def handle_new_member(update, context):
 @check_is_group_message
 @check_rights
 @check_is_reply
-def ignore_user(update, context):
+def ignore_user(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -269,7 +270,7 @@ def ignore_user(update, context):
 
 
 @check_is_private_message
-def join_group(update, context):
+def join_group(update: telegram.Update, context: CallbackContext):
 
     message = update.message
     session = JoinSession(message, context)
@@ -280,7 +281,7 @@ def join_group(update, context):
 @check_valid_group
 @check_is_group_message
 @check_rights
-def remind_users(update, context):
+def remind_users(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -305,7 +306,7 @@ def remind_users(update, context):
 @check_is_group_message
 @check_rights
 @check_is_reply
-def request_explanation(update, context):
+def request_explanation(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -344,7 +345,7 @@ def request_explanation(update, context):
 @check_is_group_message
 @check_rights
 @check_is_reply
-def restrict_user(update, context):
+def restrict_user(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -389,7 +390,7 @@ def restrict_user(update, context):
 @check_valid_group
 @check_is_group_message
 @check_rights
-def revoke_link(update, context):
+def revoke_link(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -405,7 +406,7 @@ def revoke_link(update, context):
     chat.send_message(text=Message.REVOKED_LINK, parse_mode=telegram.ParseMode.HTML)
 
 
-def send_help(update, context):
+def send_help(update: telegram.Update, context: CallbackContext):
 
     message = update.message
     chat = message.chat
@@ -420,7 +421,7 @@ def send_help(update, context):
         message.reply_text(text=Message.HELP_IN_PM, parse_mode=telegram.ParseMode.HTML)
 
 
-def send_id(update, context):
+def send_id(update: telegram.Update, context: CallbackContext):
 
     message = update.message
     chat = message.chat
@@ -436,7 +437,7 @@ def send_id(update, context):
 @check_is_group_message
 @check_rights
 @check_is_reply
-def send_link(update, context):
+def send_link(update: telegram.Update, context: CallbackContext):
 
     bot = context.bot
     cache = context.bot_data["cache"]
@@ -479,7 +480,7 @@ def send_link(update, context):
         )
 
 
-def send_start(update, context):
+def send_start(update: telegram.Update, context: CallbackContext):
 
     args = context.args
     message = update.message

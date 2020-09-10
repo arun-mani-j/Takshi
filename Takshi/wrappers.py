@@ -1,14 +1,15 @@
 import telegram
 from .constants import Message
+from .processor import Processor
 
 
 def cache_group(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        cache = context.bot_data["cache"]
-        processor = context.bot_data["processor"]
-        message = update.message
-        chat = message.chat
+        cache: dict = context.bot_data["cache"]
+        processor: Processor = context.bot_data["processor"]
+        message: telegram.Message = update.message
+        chat: telegram.Chat = message.chat
 
         try:
             cache[chat.id]
@@ -21,10 +22,10 @@ def cache_group(func):
 
 
 def check_is_group_message(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        message = update.message
-        chat = message.chat
+        message: telegram.Message = update.message
+        chat: telegram.Chat = message.chat
 
         if chat.type != "private":
             func(update, context)
@@ -35,10 +36,10 @@ def check_is_group_message(func):
 
 
 def check_is_private_message(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        message = update.message
-        chat = message.chat
+        message: telegram.Message = update.message
+        chat: telegram.Chat = message.chat
 
         if chat.type == "private":
             func(update, context)
@@ -49,9 +50,9 @@ def check_is_private_message(func):
 
 
 def check_is_reply(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        message = update.message
+        message: telegram.Message = update.message
 
         if message.reply_to_message:
             func(update, context)
@@ -62,13 +63,13 @@ def check_is_reply(func):
 
 
 def check_rights(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        cache = context.bot_data["cache"]
-        processor = context.bot_data["processor"]
-        message = update.message
-        chat = message.chat
-        user = message.from_user
+        cache: dict = context.bot_data["cache"]
+        processor: Processor = context.bot_data["processor"]
+        message: telegram.Message = update.message
+        chat: telegram.Chat = message.chat
+        user: telegram.User = message.from_user
 
         id, _ = cache[chat.id]
         allowed = processor.is_admin(id, user.id)
@@ -82,11 +83,11 @@ def check_rights(func):
 
 
 def check_valid_group(func):
-    def wrapped(update, context):
+    def wrapped(update: telegram.Update, context: CallbackContext):
 
-        cache = context.bot_data["cache"]
-        message = update.message
-        chat = message.chat
+        cache: dict = context.bot_data["cache"]
+        message: telegram.Message = update.message
+        chat: telegram.Chat = message.chat
         id, type = cache[chat.id]
 
         if id and type:
