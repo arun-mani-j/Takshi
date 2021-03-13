@@ -75,7 +75,7 @@
   The bot links its personal message, gateway group, real group and admins group. This offers additional facility in moderation, as you will
   see in later sections.
  5. Written in Python, 100 % free and open source  
-  You need not pay the developers, think of them or even thank them. Deploy the bot yourself, and enjoy life.
+  You don't need to pay the developers, think of them or even thank them. Deploy the bot yourself, and enjoy life.
 
 ## Quick Start ##
  For you all, who are not ready to host the bot yourself, you can use the instance I host.
@@ -138,7 +138,7 @@
  * What is Database URL ? - [Database URL](https://stackoverflow.com/questions/3582552/postgresql-connection-url)
 
 ### Launching The Bot ###
- Wow, you managed to come till here ! Running the bot is just a command.
+ Wow, you managed to come till here ! Running the bot is just a command away.
  You need to open the terminal and set the directory to the cloned folder. In hosting solutions, it's quite a different way, look at the
  documentation of the hosting solution.
  If you are hosting on your own :
